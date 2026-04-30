@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,12 @@ fun WelcomeScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Icon(
+            painter = painterResource(com.ndejje.nduupdates.R.drawable.nduupdates_logo),
+            contentDescription = "NDU Logo",
+            modifier = Modifier.size(100.dp),
+            tint = Color.White
+        )
         Text(
             text = "NDU UPDATES",
             fontSize = 32.sp,
