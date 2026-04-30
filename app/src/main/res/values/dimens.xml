@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="screenPadding">24dp</dimen>
+    <dimen name="spacingLarge">24dp</dimen>
+    <dimen name="spacingMedium">16dp</dimen>
+    <dimen name="spacingSmall">8dp</dimen>
+    <dimen name="buttonHeight">52dp</dimen>
+    <dimen name="logoSize">80dp</dimen>
+    <dimen name="cardElevation">4dp</dimen>
+</resources>
