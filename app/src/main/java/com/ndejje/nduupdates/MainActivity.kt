@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         // Initialize Room Database and Repositories
         val database = AppDatabase.getDatabase(this)
         val userRepository = UserRepository(database.userDao())
-        val noticeRepository = NoticeRepository(database.noticeDao())
+        val noticeRepository = NoticeRepository(database.noticeDao(), database.commentDao())
         val factory = ViewModelFactory(userRepository, noticeRepository)
 
         setContent {

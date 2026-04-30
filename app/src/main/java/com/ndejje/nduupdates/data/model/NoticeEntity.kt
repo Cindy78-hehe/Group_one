@@ -12,5 +12,6 @@ data class NoticeEntity(
     val author: String,
     val authorRole: String,
     val timestamp: Long = System.currentTimeMillis(),
-    val targetRole: String = "All"
+    val targetRole: String = "All",
+    val type: String = "Notice" // "Notice", "Event", "News"
 )

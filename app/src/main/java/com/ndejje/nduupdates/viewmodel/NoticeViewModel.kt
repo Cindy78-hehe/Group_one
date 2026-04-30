@@ -2,11 +2,10 @@ package com.ndejje.nduupdates.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.data.repository.NoticeRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class NoticeViewModel(private val repository: NoticeRepository) : ViewModel() {
@@ -27,6 +26,15 @@ class NoticeViewModel(private val repository: NoticeRepository) : ViewModel() {
     fun deleteNotice(noticeId: Int) {
         viewModelScope.launch {
             repository.deleteNotice(noticeId)
+        }
+    }
+
+    fun getCommentsForNotice(noticeId: Int): Flow<List<CommentEntity>> =
+        repository.getCommentsForNotice(noticeId)
+
+    fun addComment(comment: CommentEntity) {
+        viewModelScope.launch {
+            repository.addComment(comment)
         }
     }
 }
