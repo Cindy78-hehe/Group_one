@@ -9,6 +9,9 @@ val PurpleMedium = Color(0xFFBA88AE)
 val PurpleMain = Color(0xFF9E6899)
 val PurpleDark = Color(0xFF5B3765)
 
+val NDU_Dark_Purple = Color(0xFF5B3765)
+val NDU_Light_Pink = Color(0xFFF3CCDE)
+
 // Functional colors
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)

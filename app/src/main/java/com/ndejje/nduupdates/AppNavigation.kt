@@ -39,7 +39,7 @@ fun AppNavigation(
         composable(Routes.WELCOME) { WelcomeScreen(navController) }
         composable(Routes.LOGIN) { LoginScreen(navController, authViewModel) }
         composable(Routes.REGISTER) { RegisterScreen(navController, authViewModel) }
-        composable(Routes.STUDENT_DASHBOARD) { StudentDashboardScreen(navController, noticeViewModel) }
+        composable(Routes.STUDENT_DASHBOARD) { StudentDashboardScreen(navController, noticeViewModel, authViewModel) }
         composable(Routes.LECTURER_DASHBOARD) { LecturerDashboardScreen(navController, noticeViewModel) }
         composable(Routes.ADMIN_DASHBOARD) { AdminDashboardScreen(navController, noticeViewModel) }
         composable(Routes.CREATE_NOTICE) { CreateNoticeScreen(navController, noticeViewModel, authViewModel) }
