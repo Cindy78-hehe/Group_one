@@ -109,7 +109,7 @@ fun AdminDashboardScreen(
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize().background(Color.White)) {
-            val type = when(selectedTab) {
+            val typeFilter = when(selectedTab) {
                 1 -> "Notice"
                 2 -> "News"
                 3 -> "Event"
@@ -119,10 +119,10 @@ fun AdminDashboardScreen(
             if (selectedTab == 0) {
                 AdminHomeScreen()
             } else {
-                val filteredNotices = if (type == "Notice") {
+                val filteredNotices = if (typeFilter == "Notice") {
                     notices.filter { it.type == "Notice" || it.type == "" }
                 } else {
-                    notices.filter { it.type == type }
+                    notices.filter { it.type == typeFilter }
                 }
                 AdminPostsScreen(
                     title = tabs[selectedTab],

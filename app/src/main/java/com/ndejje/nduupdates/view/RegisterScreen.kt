@@ -33,10 +33,6 @@ fun RegisterScreen(
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
     var confirmPassInput by remember { mutableStateOf("") }
-    
-    var role by remember { mutableStateOf("Student") }
-    val roles = listOf("Student", "Lecturer", "Admin")
-    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
         if (authState is AuthUiState.Success) {
@@ -103,38 +99,6 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = role,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Role") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                roles.forEach { selectionOption ->
-                    DropdownMenuItem(
-                        text = { Text(selectionOption) },
-                        onClick = {
-                            role = selectionOption
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
-
         if (authState is AuthUiState.Error) {
             Text(
                 text = (authState as AuthUiState.Error).message,
@@ -146,12 +110,26 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                val dbRole = when (role) {
-                    "Lecturer" -> "STAFF"
-                    "Admin" -> "ADMIN"
-                    else -> "STUDENT"
+                val email = emailInput.trim().lowercase()
+                
+                // Basic validation
+                if (fullNameInput.isBlank() || emailInput.isBlank() || passwordInput.isBlank()) {
+                    // Ideally, you'd show a UI message here, but for now we'll just return
+                    return@Button
                 }
-                viewModel.register(fullNameInput, emailInput, passwordInput, dbRole)
+                
+                if (passwordInput != confirmPassInput) {
+                    // Handle password mismatch
+                    return@Button
+                }
+
+                val dbRole = when {
+                    email.endsWith("@admin.gmail.com") -> "ADMIN"
+                    email.endsWith("@lect.gmail.com") -> "STAFF"
+                    email.endsWith("@stud.gmail.com") -> "STUDENT"
+                    else -> "STUDENT" // Default role
+                }
+                viewModel.register(fullNameInput, email, passwordInput, dbRole)
             },
             modifier = Modifier
                 .fillMaxWidth()
