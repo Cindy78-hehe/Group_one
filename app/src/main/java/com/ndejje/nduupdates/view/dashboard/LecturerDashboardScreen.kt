@@ -34,7 +34,7 @@ fun LecturerDashboardScreen(
     authViewModel: AuthViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "My Posts", "News", "Events")
+    val tabs = listOf("Home", "Posts", "News", "Events")
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
     var showProfileDialog by remember { mutableStateOf(false) }
 
@@ -127,19 +127,6 @@ fun LecturerDashboardScreen(
                     )
                 }
             }
-        },
-        floatingActionButton = {
-            if (selectedTab == 1) { // Only show on Posts tab
-                ExtendedFloatingActionButton(
-                    onClick = { navController.navigate(Routes.CREATE_NOTICE) },
-                    containerColor = NDU_Dark_Purple,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("New Notice")
-                }
-            }
         }
     ) { innerPadding ->
         Box(
@@ -150,7 +137,7 @@ fun LecturerDashboardScreen(
         ) {
             when (selectedTab) {
                 0 -> LecturerHomeScreen()
-                1 -> LecturerPostsScreen(notices, noticeViewModel)
+                1 -> LecturerPostsScreen(notices)
                 2 -> SimplePlaceholderScreen("University News")
                 3 -> SimplePlaceholderScreen("Upcoming Events")
             }
@@ -174,7 +161,7 @@ fun LecturerHomeScreen() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "Manage your announcements and stay updated with campus news.",
+                "Welcome back! Stay informed with the latest information from Ndejje University.",
                 color = Color.Gray,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -188,7 +175,7 @@ fun LecturerHomeScreen() {
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "Recent Activity Summary",
+                        text = "Featured Update",
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
@@ -200,14 +187,25 @@ fun LecturerHomeScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LecturerPostsScreen(notices: List<NoticeEntity>, viewModel: NoticeViewModel) {
+fun LecturerPostsScreen(notices: List<NoticeEntity>) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("All My Updates") }
-    val filters = listOf("All My Updates", "Academic Notices", "Department News")
+    var selectedFilter by remember { mutableStateOf("All Updates") }
+    val filters = listOf("All Updates", "Lecturer Updates", "Admin Notices", "Department News")
 
-    // For lecturers, maybe they want to see all or just theirs. 
-    // For now, let's just show all but label them.
-    
+    val filteredUpdates = remember(selectedFilter, notices) {
+        if (selectedFilter == "All Updates") {
+            notices
+        } else {
+            notices.filter { 
+                when(selectedFilter) {
+                    "Admin Notices" -> it.authorRole == "ADMIN"
+                    "Lecturer Updates" -> it.authorRole == "STAFF"
+                    else -> true
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -218,7 +216,7 @@ fun LecturerPostsScreen(notices: List<NoticeEntity>, viewModel: NoticeViewModel)
                 value = selectedFilter,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Filter My Posts") },
+                label = { Text("Filter Updates") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -246,17 +244,17 @@ fun LecturerPostsScreen(notices: List<NoticeEntity>, viewModel: NoticeViewModel)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (notices.isEmpty()) {
+        if (filteredUpdates.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("You haven't posted any updates yet.")
+                Text("No updates found.")
             }
         } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(notices) { notice ->
-                    LecturerPostCard(notice, onDelete = { viewModel.deleteNotice(notice.id) })
+                items(filteredUpdates) { update ->
+                    LecturerPostCard(update)
                 }
             }
         }
@@ -264,7 +262,7 @@ fun LecturerPostsScreen(notices: List<NoticeEntity>, viewModel: NoticeViewModel)
 }
 
 @Composable
-fun LecturerPostCard(notice: NoticeEntity, onDelete: () -> Unit) {
+fun LecturerPostCard(notice: NoticeEntity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -282,12 +280,9 @@ fun LecturerPostCard(notice: NoticeEntity, onDelete: () -> Unit) {
                     Text(notice.author.take(1), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
+                Column {
                     Text(notice.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = NDU_Dark_Purple)
-                    Text("Target: ${notice.targetRole}", fontSize = 12.sp, color = Color.Gray)
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                    Text(notice.author, fontSize = 12.sp, color = Color.Gray)
                 }
             }
             
@@ -295,28 +290,20 @@ fun LecturerPostCard(notice: NoticeEntity, onDelete: () -> Unit) {
             Text(notice.content, fontSize = 14.sp, color = Color.DarkGray)
             Spacer(modifier = Modifier.height(16.dp))
             
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+            Button(
+                onClick = { /* TODO: Open Comments */ },
+                colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                modifier = Modifier.align(Alignment.End)
             ) {
-                TextButton(onClick = { /* TODO: Edit */ }) {
-                    Text("Edit", color = NDU_Dark_Purple)
-                }
+                Icon(
+                    painter = painterResource(id = android.R.drawable.stat_notify_chat),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = NDU_Dark_Purple
+                )
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = { /* TODO: View Comments */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.stat_notify_chat),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = NDU_Dark_Purple
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Comments", color = NDU_Dark_Purple, fontWeight = FontWeight.SemiBold)
-                }
+                Text("Comment", color = NDU_Dark_Purple, fontWeight = FontWeight.SemiBold)
             }
         }
     }
