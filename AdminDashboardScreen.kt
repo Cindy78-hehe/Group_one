@@ -32,8 +32,6 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.R
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
@@ -96,7 +94,7 @@ fun AdminDashboardScreen(
                             contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_12)))
-                        Text(stringResource(R.string.title_admin_dashboard), color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.title_admin_dashboard), color = Color.White, style = MaterialTheme.typography.titleLarge)
                     }
                 },
                 actions = {
@@ -232,6 +230,7 @@ fun AdminHomeScreen() {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
                 stringResource(R.string.title_admin_control_panel),
+                style = MaterialTheme.typography.headlineMedium,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
@@ -239,6 +238,7 @@ fun AdminHomeScreen() {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
                 stringResource(R.string.desc_admin_panel),
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
@@ -253,6 +253,7 @@ fun AdminHomeScreen() {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(
                         text = stringResource(R.string.title_system_overview),
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
