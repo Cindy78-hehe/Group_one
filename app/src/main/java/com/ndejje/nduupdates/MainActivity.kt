@@ -14,8 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndejje.nduupdates.data.model.AppDatabase
-import com.ndejje.nduupdates.data.repository.UserRepository
 import com.ndejje.nduupdates.data.repository.NoticeRepository
+import com.ndejje.nduupdates.data.repository.UserRepository
 import com.ndejje.nduupdates.ui.theme.NduUpdatesTheme
 import com.ndejje.nduupdates.viewmodel.ViewModelFactory
 

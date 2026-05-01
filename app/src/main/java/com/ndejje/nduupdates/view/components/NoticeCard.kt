@@ -1,5 +1,6 @@
 package com.ndejje.nduupdates.view.components
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,23 +15,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import com.ndejje.nduupdates.R
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
 import com.ndejje.nduupdates.ui.theme.NduUpdatesTheme
-import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
-import android.content.Intent
-import android.net.Uri
-
-import androidx.compose.ui.res.painterResource
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

@@ -1,6 +1,5 @@
 package com.ndejje.nduupdates.view.components
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.ndejje.nduupdates.data.model.UserEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
@@ -35,7 +35,7 @@ fun ProfileDialog(
     onLogout: () -> Unit
 ) {
     var name by remember { mutableStateOf(user?.username ?: "") }
-    var profilePicUri by remember { mutableStateOf<Uri?>(user?.profilePictureUri?.let { Uri.parse(it) }) }
+    var profilePicUri by remember { mutableStateOf(user?.profilePictureUri?.toUri()) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
