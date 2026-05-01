@@ -20,15 +20,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.ndejje.nduupdates.R
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
+import com.ndejje.nduupdates.view.components.NoticeCard
 import com.ndejje.nduupdates.view.components.ProfileDialog
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 import com.ndejje.nduupdates.viewmodel.NoticeViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import android.net.Uri
+import android.content.Intent
+import android.webkit.MimeTypeMap
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,12 +95,23 @@ fun AdminDashboardScreen(
                 },
                 actions = {
                     IconButton(onClick = { showProfileDialog = true }) {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = "Profile",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
+                        if (currentUser?.profilePictureUri != null) {
+                            AsyncImage(
+                                model = currentUser?.profilePictureUri,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = "Profile",
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NDU_Dark_Purple)
@@ -164,7 +188,7 @@ fun AdminDashboardScreen(
         AddUpdateDialog(
             initialType = initialType,
             onDismiss = { showAddDialog = false },
-            onPost = { title, content, target, postType ->
+            onPost = { title, content, target, postType, attachmentUri, attachmentType ->
                 val newNotice = NoticeEntity(
                     title = title,
                     content = content,
@@ -172,7 +196,9 @@ fun AdminDashboardScreen(
                     author = currentUser?.username ?: "Admin",
                     authorRole = "ADMIN",
                     type = postType,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = System.currentTimeMillis(),
+                    attachmentUri = attachmentUri,
+                    attachmentType = attachmentType
                 )
                 noticeViewModel.addNotice(newNotice)
                 showAddDialog = false
@@ -248,55 +274,13 @@ fun AdminPostsScreen(
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize()) {
                 items(notices) { notice ->
-                    AdminPostCard(
-                        notice, 
+                    NoticeCard(
+                        notice = notice, 
+                        showDelete = true,
+                        showTarget = true,
                         onDelete = { noticeViewModel.deleteNotice(notice.id) },
                         onComment = { onViewComments(notice) }
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun AdminPostCard(notice: NoticeEntity, onDelete: () -> Unit, onComment: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, NDU_Light_Pink)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(notice.title, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple, fontSize = 18.sp)
-                    Text("By ${notice.author} • Target: ${notice.targetRole}", fontSize = 12.sp, color = Color.Gray)
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red, modifier = Modifier.size(20.dp))
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(notice.content, fontSize = 14.sp, color = Color.DarkGray)
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = onComment,
-                    colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.stat_notify_chat), 
-                        contentDescription = null, 
-                        modifier = Modifier.size(16.dp), 
-                        tint = NDU_Dark_Purple
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Comments", color = NDU_Dark_Purple, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
@@ -308,12 +292,36 @@ fun AdminPostCard(notice: NoticeEntity, onDelete: () -> Unit, onComment: () -> U
 fun AddUpdateDialog(
     initialType: String,
     onDismiss: () -> Unit, 
-    onPost: (String, String, String, String) -> Unit
+    onPost: (String, String, String, String, String?, String?) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var targetRole by remember { mutableStateOf("All") }
     var postType by remember { mutableStateOf(initialType) }
+    var attachmentUri by remember { mutableStateOf<Uri?>(null) }
+    var attachmentType by remember { mutableStateOf<String?>(null) }
+    
+    val context = LocalContext.current
+    
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> 
+            if (uri != null) {
+                attachmentUri = uri
+                attachmentType = "IMAGE"
+            }
+        }
+    )
+    
+    val filePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) {
+                attachmentUri = uri
+                attachmentType = "FILE"
+            }
+        }
+    )
     
     val roles = listOf("All", "Student", "Lecturer")
     val types = listOf("Notice", "News", "Event")
@@ -325,104 +333,162 @@ fun AddUpdateDialog(
         onDismissRequest = onDismiss,
         title = { Text("Post New $postType", color = NDU_Dark_Purple, fontWeight = FontWeight.Bold) },
         text = {
-            Column {
-                OutlinedTextField(
-                    value = title, 
-                    onValueChange = { title = it }, 
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NDU_Dark_Purple,
-                        focusedLabelColor = NDU_Dark_Purple
-                    )
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ExposedDropdownMenuBox(
-                        expanded = typeExpanded,
-                        onExpandedChange = { typeExpanded = !typeExpanded },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        OutlinedTextField(
-                            value = postType,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Type") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = NDU_Dark_Purple,
-                                focusedLabelColor = NDU_Dark_Purple
-                            )
+            LazyColumn {
+                item {
+                    OutlinedTextField(
+                        value = title, 
+                        onValueChange = { title = it }, 
+                        label = { Text("Title") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = NDU_Dark_Purple,
+                            focusedLabelColor = NDU_Dark_Purple
                         )
-                        ExposedDropdownMenu(
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ExposedDropdownMenuBox(
                             expanded = typeExpanded,
-                            onDismissRequest = { typeExpanded = false }
+                            onExpandedChange = { typeExpanded = !typeExpanded },
+                            modifier = Modifier.weight(1f)
                         ) {
-                            types.forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(type) },
-                                    onClick = {
-                                        postType = type
-                                        typeExpanded = false
-                                    }
+                            OutlinedTextField(
+                                value = postType,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Type") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = NDU_Dark_Purple,
+                                    focusedLabelColor = NDU_Dark_Purple
                                 )
+                            )
+                            ExposedDropdownMenu(
+                                expanded = typeExpanded,
+                                onDismissRequest = { typeExpanded = false }
+                            ) {
+                                types.forEach { type ->
+                                    DropdownMenuItem(
+                                        text = { Text(type) },
+                                        onClick = {
+                                            postType = type
+                                            typeExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        ExposedDropdownMenuBox(
+                            expanded = roleExpanded,
+                            onExpandedChange = { roleExpanded = !roleExpanded },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            OutlinedTextField(
+                                value = targetRole,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Audience") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = NDU_Dark_Purple,
+                                    focusedLabelColor = NDU_Dark_Purple
+                                )
+                            )
+                            ExposedDropdownMenu(
+                                expanded = roleExpanded,
+                                onDismissRequest = { roleExpanded = false }
+                            ) {
+                                roles.forEach { role ->
+                                    DropdownMenuItem(
+                                        text = { Text(role) },
+                                        onClick = {
+                                            targetRole = role
+                                            roleExpanded = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
-
-                    ExposedDropdownMenuBox(
-                        expanded = roleExpanded,
-                        onExpandedChange = { roleExpanded = !roleExpanded },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        OutlinedTextField(
-                            value = targetRole,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Audience") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
-                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = NDU_Dark_Purple,
-                                focusedLabelColor = NDU_Dark_Purple
-                            )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = content, 
+                        onValueChange = { content = it }, 
+                        label = { Text("Content") },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = NDU_Dark_Purple,
+                            focusedLabelColor = NDU_Dark_Purple
                         )
-                        ExposedDropdownMenu(
-                            expanded = roleExpanded,
-                            onDismissRequest = { roleExpanded = false }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Text("Attachments", fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(
+                            onClick = { imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                            modifier = Modifier.weight(1f)
                         ) {
-                            roles.forEach { role ->
-                                DropdownMenuItem(
-                                    text = { Text(role) },
-                                    onClick = {
-                                        targetRole = role
-                                        roleExpanded = false
-                                    }
-                                )
+                            Icon(Icons.Default.Image, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Image", fontSize = 12.sp)
+                        }
+                        OutlinedButton(
+                            onClick = { filePicker.launch("*/*") },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.AttachFile, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("File", fontSize = 12.sp)
+                        }
+                    }
+                    
+                    if (attachmentUri != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(NDU_Light_Pink.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                                .padding(8.dp)
+                        ) {
+                            Icon(
+                                if (attachmentType == "IMAGE") Icons.Default.Image else Icons.Default.Description,
+                                contentDescription = null,
+                                tint = NDU_Dark_Purple,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Attachment selected",
+                                modifier = Modifier.weight(1f),
+                                fontSize = 12.sp
+                            )
+                            IconButton(onClick = { attachmentUri = null; attachmentType = null }, modifier = Modifier.size(24.dp)) {
+                                Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Red, modifier = Modifier.size(16.dp))
                             }
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = content, 
-                    onValueChange = { content = it }, 
-                    label = { Text("Content") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NDU_Dark_Purple,
-                        focusedLabelColor = NDU_Dark_Purple
-                    )
-                )
             }
         },
         confirmButton = {
             Button(
-                onClick = { if (title.isNotBlank() && content.isNotBlank()) onPost(title, content, targetRole, postType) },
+                onClick = { 
+                    if (title.isNotBlank() && content.isNotBlank()) {
+                        onPost(title, content, targetRole, postType, attachmentUri?.toString(), attachmentType) 
+                    }
+                },
+                enabled = title.isNotBlank() && content.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Dark_Purple)
             ) { Text("Post", color = Color.White) }
         },

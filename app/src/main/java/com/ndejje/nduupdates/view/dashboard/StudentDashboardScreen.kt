@@ -28,9 +28,18 @@ import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
+import com.ndejje.nduupdates.view.components.NoticeCard
 import com.ndejje.nduupdates.view.components.ProfileDialog
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 import com.ndejje.nduupdates.viewmodel.NoticeViewModel
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.filled.Description
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -240,56 +249,11 @@ fun PostsScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(notices) { update ->
-                    PostCard(update, onComment = { onViewComments(update) })
+                    NoticeCard(
+                        notice = update,
+                        onComment = { onViewComments(update) }
+                    )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun PostCard(notice: NoticeEntity, onComment: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, NDU_Light_Pink)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(NDU_Light_Pink, androidx.compose.foundation.shape.CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(notice.author.take(1), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(notice.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = NDU_Dark_Purple)
-                    Text(notice.author, fontSize = 12.sp, color = Color.Gray)
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(notice.content, fontSize = 14.sp, color = Color.DarkGray)
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Button(
-                onClick = onComment,
-                colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.stat_notify_chat),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = NDU_Dark_Purple
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Comment", color = NDU_Dark_Purple, fontWeight = FontWeight.SemiBold)
             }
         }
     }

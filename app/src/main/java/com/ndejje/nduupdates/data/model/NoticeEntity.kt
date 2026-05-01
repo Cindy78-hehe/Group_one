@@ -13,5 +13,7 @@ data class NoticeEntity(
     val authorRole: String,
     val timestamp: Long = System.currentTimeMillis(),
     val targetRole: String = "All",
-    val type: String = "Notice" // "Notice", "Event", "News"
+    val type: String = "Notice", // "Notice", "Event", "News"
+    val attachmentUri: String? = null,
+    val attachmentType: String? = null // "IMAGE", "FILE"
 )
