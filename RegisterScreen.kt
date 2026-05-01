@@ -1,5 +1,6 @@
 package com.ndejje.nduupdates.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -8,7 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -51,6 +54,14 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.nduupdate33),
+            contentDescription = "NDU Logo",
+            modifier = Modifier
+                .size(100.dp),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
         Text(
             text = stringResource(R.string.label_register),
             style = MaterialTheme.typography.headlineMedium,
@@ -168,6 +179,14 @@ fun RegisterScreenPreview() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.nduupdate33),
+                    contentDescription = "NDU Logo",
+                    modifier = Modifier
+                        .size(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
                 Text(
                     text = stringResource(R.string.label_register),
                     style = MaterialTheme.typography.headlineMedium,
