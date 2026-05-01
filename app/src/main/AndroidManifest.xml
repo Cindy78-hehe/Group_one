@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/nduupdates_logo"
+        android:icon="@drawable/nduupdate33"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/nduupdates_logo"
+        android:roundIcon="@drawable/nduupdate33"
         android:supportsRtl="true"
         android:theme="@style/Theme.NduUpdates">
         <activity

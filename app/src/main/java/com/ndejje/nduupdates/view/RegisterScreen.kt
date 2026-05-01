@@ -55,7 +55,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nduupdates_logo),
+            painter = painterResource(id = R.drawable.nduupdate33),
             contentDescription = "NDU Logo",
             modifier = Modifier
                 .size(100.dp),
@@ -180,7 +180,7 @@ fun RegisterScreenPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nduupdates_logo),
+                    painter = painterResource(id = R.drawable.nduupdate33),
                     contentDescription = "NDU Logo",
                     modifier = Modifier
                         .size(100.dp),

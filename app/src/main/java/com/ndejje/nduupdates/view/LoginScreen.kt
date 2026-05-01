@@ -55,7 +55,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nduupdates_logo),
+            painter = painterResource(id = R.drawable.nduupdate33),
             contentDescription = "NDU Logo",
             modifier = Modifier
                 .size(120.dp)
@@ -140,7 +140,7 @@ fun LoginScreenPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nduupdates_logo),
+                    painter = painterResource(id = R.drawable.nduupdate33),
                     contentDescription = "NDU Logo",
                     modifier = Modifier
                         .size(120.dp)

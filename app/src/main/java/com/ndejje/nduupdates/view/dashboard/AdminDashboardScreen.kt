@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,9 +52,10 @@ fun AdminDashboardScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.nduupdates_logo),
+                            painter = painterResource(id = R.drawable.nduupdate33),
                             contentDescription = "NDU Logo",
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(40.dp),
+                            contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text("Admin Dashboard", color = Color.White, fontWeight = FontWeight.Bold)
