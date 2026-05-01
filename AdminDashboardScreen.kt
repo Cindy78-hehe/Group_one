@@ -231,6 +231,8 @@ fun AdminHomeScreen() {
             Text(
                 stringResource(R.string.title_admin_control_panel),
                 style = MaterialTheme.typography.headlineMedium,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
             )
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
@@ -252,6 +254,7 @@ fun AdminHomeScreen() {
                     Text(
                         text = stringResource(R.string.title_system_overview),
                         style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                 }
@@ -268,7 +271,7 @@ fun AdminPostsScreen(
     onViewComments: (NoticeEntity) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
-        Text(stringResource(R.string.title_manage_items, title), style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple)
+        Text(stringResource(R.string.title_manage_items, title), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
         
         if (notices.isEmpty()) {
@@ -326,11 +329,7 @@ fun AddUpdateDialog(
         }
     )
     
-    val roles = listOf(
-        stringResource(R.string.role_all),
-        stringResource(R.string.role_student),
-        stringResource(R.string.role_lecturer)
-    )
+    val roles = listOf("All", "Student", "Lecturer")
     val types = listOf(
         stringResource(R.string.label_notice),
         stringResource(R.string.label_news),
@@ -342,7 +341,7 @@ fun AddUpdateDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, style = MaterialTheme.typography.titleLarge) },
+        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, fontWeight = FontWeight.Bold) },
         text = {
             LazyColumn {
                 item {
@@ -441,7 +440,7 @@ fun AddUpdateDialog(
                     
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
                     
-                    Text(stringResource(R.string.label_attachments), style = MaterialTheme.typography.labelLarge, color = NDU_Dark_Purple)
+                    Text(stringResource(R.string.label_attachments), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                     
                     Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_8))) {
@@ -521,11 +520,11 @@ fun CommentsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.title_comments_with_name, notice.title), style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple) },
+        title = { Text(stringResource(R.string.title_comments_with_name, notice.title), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple) },
         text = {
             Column(modifier = Modifier.heightIn(max = 400.dp)) {
                 if (comments.isEmpty()) {
-                    Text(stringResource(R.string.msg_no_comments), color = Color.Gray, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_16)), style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.msg_no_comments), color = Color.Gray, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_16)))
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f, fill = false),
@@ -537,8 +536,8 @@ fun CommentsDialog(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(dimensionResource(R.dimen.spacing_8))) {
-                                    Text(comment.author, style = MaterialTheme.typography.labelMedium, color = NDU_Dark_Purple)
-                                    Text(comment.content, style = MaterialTheme.typography.bodyMedium)
+                                    Text(comment.author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = NDU_Dark_Purple)
+                                    Text(comment.content, fontSize = 14.sp)
                                 }
                             }
                         }

@@ -55,11 +55,11 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nduupdates333),
-            contentDescription = stringResource(R.string.content_description_logo),
+            painter = painterResource(id = R.drawable.nduupdate33),
+            contentDescription = "NDU Logo",
             modifier = Modifier
-                .size(dimensionResource(R.dimen.logoSize))
-                .padding(dimensionResource(R.dimen.spacingSmall)),
+                .size(120.dp)
+                .padding(8.dp),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
@@ -109,11 +109,11 @@ fun LoginScreen(
         ) {
             if (authState is AuthUiState.Loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium)),
+                    modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(stringResource(R.string.btn_login), style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.btn_login))
             }
         }
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
@@ -140,7 +140,7 @@ fun LoginScreenPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nduupdates333),
+                    painter = painterResource(id = R.drawable.nduupdate33),
                     contentDescription = "NDU Logo",
                     modifier = Modifier
                         .size(120.dp)

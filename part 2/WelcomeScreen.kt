@@ -29,7 +29,7 @@ fun WelcomeScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = com.ndejje.nduupdates.R.drawable.nduupdate33),
+            painter = painterResource(id = com.ndejje.nduupdates.R.drawable.nduupdates_logo),
             contentDescription = "NDU Logo",
             modifier = Modifier.size(100.dp),
             contentScale = ContentScale.Crop
@@ -77,7 +77,7 @@ fun WelcomeScreenPreview() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(id = com.ndejje.nduupdates.R.drawable.nduupdate33),
+                    painter = painterResource(id = com.ndejje.nduupdates.R.drawable.nduupdates_logo),
                     contentDescription = "NDU Logo",
                     modifier = Modifier.size(100.dp),
                     contentScale = ContentScale.Crop

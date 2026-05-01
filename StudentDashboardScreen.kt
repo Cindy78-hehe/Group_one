@@ -96,7 +96,8 @@ fun StudentDashboardScreen(
                         Text(
                             text = stringResource(R.string.title_ndu_updates),
                             color = Color.White,
-                            style = MaterialTheme.typography.titleLarge
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
                         )
                     }
                 },
@@ -204,14 +205,14 @@ fun HomeScreen() {
         item {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
-                stringResource(R.string.msg_welcome_title),
-                style = MaterialTheme.typography.headlineMedium,
+                "Welcome to NDU Updates",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
             )
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
-                stringResource(R.string.msg_welcome_desc),
-                style = MaterialTheme.typography.bodyMedium,
+                "Stay informed with the latest information from Ndejje University.",
                 color = Color.Gray,
                 modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
@@ -225,8 +226,8 @@ fun HomeScreen() {
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = stringResource(R.string.label_featured_update),
-                        style = MaterialTheme.typography.labelLarge,
+                        text = "Featured Update",
+                        fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                 }
@@ -242,7 +243,7 @@ fun PostsScreen(
     onViewComments: (NoticeEntity) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
-        Text(title, style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple)
+        Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
 
         if (notices.isEmpty()) {
@@ -275,7 +276,7 @@ fun SimplePlaceholderScreen(title: String) {
         item {
             Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(64.dp), tint = NDU_Light_Pink)
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
-            Text(title, style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple)
+            Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
             Text(stringResource(R.string.msg_no_items_found, title), color = Color.Gray)
         }
     }

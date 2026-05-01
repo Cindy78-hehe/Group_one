@@ -55,10 +55,10 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.nduupdates333),
-            contentDescription = stringResource(R.string.content_description_logo),
+            painter = painterResource(id = R.drawable.nduupdate33),
+            contentDescription = "NDU Logo",
             modifier = Modifier
-                .size(dimensionResource(R.dimen.logoSize)),
+                .size(100.dp),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
@@ -125,10 +125,12 @@ fun RegisterScreen(
                 
                 // Basic validation
                 if (fullNameInput.isBlank() || emailInput.isBlank() || passwordInput.isBlank()) {
+                    // Ideally, you'd show a UI message here, but for now we'll just return
                     return@Button
                 }
                 
                 if (passwordInput != confirmPassInput) {
+                    // Handle password mismatch
                     return@Button
                 }
 
@@ -147,11 +149,11 @@ fun RegisterScreen(
         ) {
             if (authState is AuthUiState.Loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium)),
+                    modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(stringResource(R.string.btn_register), style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.btn_register))
             }
         }
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
@@ -178,7 +180,7 @@ fun RegisterScreenPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nduupdates333),
+                    painter = painterResource(id = R.drawable.nduupdate33),
                     contentDescription = "NDU Logo",
                     modifier = Modifier
                         .size(100.dp),
