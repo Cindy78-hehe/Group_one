@@ -8,8 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ndejje.nduupdates.R
 import com.ndejje.nduupdates.data.model.NoticeEntity
@@ -51,21 +51,21 @@ fun CreateNoticeContent(
     onBack: () -> Unit,
     onPost: (String, String, String) -> Unit
 ) {
+    val roleAll = stringResource(R.string.role_all)
+    val roleStudent = stringResource(R.string.role_student)
+    val roleStaff = stringResource(R.string.role_staff)
+    
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
-    var targetRole by remember { mutableStateOf(stringResource(R.string.role_all)) }
+    var targetRole by remember { mutableStateOf(roleAll) }
     var expanded by remember { mutableStateOf(false) }
     
-    val roles = listOf(
-        stringResource(R.string.role_all),
-        stringResource(R.string.role_student),
-        stringResource(R.string.role_staff)
-    )
+    val roles = listOf(roleAll, roleStudent, roleStaff)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.title_create_notice)) },
+                title = { Text(stringResource(R.string.title_create_notice), style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -88,7 +88,8 @@ fun CreateNoticeContent(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text(stringResource(R.string.label_title)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge
             )
 
             OutlinedTextField(
@@ -98,7 +99,8 @@ fun CreateNoticeContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.content_text_height)),
-                minLines = 3
+                minLines = 3,
+                textStyle = MaterialTheme.typography.bodyLarge
             )
 
             ExposedDropdownMenuBox(
@@ -111,7 +113,8 @@ fun CreateNoticeContent(
                     readOnly = true,
                     label = { Text(stringResource(R.string.label_audience)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -131,10 +134,10 @@ fun CreateNoticeContent(
 
             Button(
                 onClick = { onPost(title, content, targetRole) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(dimensionResource(R.dimen.buttonHeight)),
                 enabled = title.isNotBlank() && content.isNotBlank()
             ) {
-                Text(stringResource(R.string.btn_post_notice))
+                Text(stringResource(R.string.btn_post_notice), style = MaterialTheme.typography.labelLarge)
             }
         }
     }

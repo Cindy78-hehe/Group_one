@@ -78,14 +78,13 @@ fun NoticeCard(
                             .background(NDU_Light_Pink, androidx.compose.foundation.shape.CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(notice.author.take(1), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+                        Text(notice.author.take(1), style = MaterialTheme.typography.titleMedium, color = NDU_Dark_Purple)
                     }
                     Spacer(Modifier.width(dimensionResource(R.dimen.spacing_12)))
                     Column {
                         Text(
                             text = notice.title,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
                             color = NDU_Dark_Purple,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -155,9 +154,8 @@ fun NoticeCard(
                         Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_8)))
                         Text(
                             stringResource(R.string.label_view_document),
-                            fontSize = 14.sp,
-                            color = NDU_Dark_Purple,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.labelLarge,
+                            color = NDU_Dark_Purple
                         )
                     }
                 }
@@ -202,8 +200,7 @@ fun NoticeCard(
                     Text(
                         stringResource(R.string.label_comments),
                         color = NDU_Dark_Purple,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }

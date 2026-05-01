@@ -21,7 +21,7 @@
     <dimen name="icon_size_medium">24dp</dimen>
     <dimen name="icon_size_large">28dp</dimen>
     <dimen name="icon_size_xlarge">40dp</dimen>
-    <dimen name="profile_image_size">100.dp</dimen>
+    <dimen name="profile_image_size">100dp</dimen>
     <dimen name="top_bar_icon_size">32dp</dimen>
     <dimen name="card_inner_padding">16dp</dimen>
     <dimen name="attachment_image_height">200dp</dimen>

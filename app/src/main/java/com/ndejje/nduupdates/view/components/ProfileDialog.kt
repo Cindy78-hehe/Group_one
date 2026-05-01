@@ -50,7 +50,7 @@ fun ProfileDialog(
         title = {
             Text(
                 stringResource(R.string.title_user_profile),
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
                 color = NDU_Dark_Purple,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -130,13 +130,13 @@ fun ProfileDialog(
                 
                 Text(
                     text = stringResource(R.string.label_email_display, user?.email ?: "N/A"),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.Start)
                 )
                 Text(
                     text = stringResource(R.string.label_role_display, user?.role ?: "N/A"),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.Start)
                 )

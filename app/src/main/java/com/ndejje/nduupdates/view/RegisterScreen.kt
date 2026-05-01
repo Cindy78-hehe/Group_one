@@ -56,9 +56,9 @@ fun RegisterScreen(
     ) {
         Image(
             painter = painterResource(id = R.drawable.nduupdates333),
-            contentDescription = "NDU Logo",
+            contentDescription = stringResource(R.string.content_description_logo),
             modifier = Modifier
-                .size(100.dp),
+                .size(dimensionResource(R.dimen.logoSize)),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
@@ -125,12 +125,10 @@ fun RegisterScreen(
                 
                 // Basic validation
                 if (fullNameInput.isBlank() || emailInput.isBlank() || passwordInput.isBlank()) {
-                    // Ideally, you'd show a UI message here, but for now we'll just return
                     return@Button
                 }
                 
                 if (passwordInput != confirmPassInput) {
-                    // Handle password mismatch
                     return@Button
                 }
 
@@ -149,11 +147,11 @@ fun RegisterScreen(
         ) {
             if (authState is AuthUiState.Loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium)),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(stringResource(R.string.btn_register))
+                Text(stringResource(R.string.btn_register), style = MaterialTheme.typography.labelLarge)
             }
         }
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))

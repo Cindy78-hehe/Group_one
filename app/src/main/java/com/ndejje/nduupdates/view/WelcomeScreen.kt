@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.ui.theme.NduUpdatesTheme
 
@@ -35,15 +36,14 @@ fun WelcomeScreen(navController: NavHostController) {
             contentScale = ContentScale.Crop
         )
         Text(
-            text = "NDU UPDATES",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
+            text = stringResource(com.ndejje.nduupdates.R.string.title_app_welcome),
+            style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Campus Notice Board",
-            fontSize = 18.sp,
+            text = stringResource(com.ndejje.nduupdates.R.string.subtitle_app_welcome),
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.secondary
         )
         Spacer(modifier = Modifier.height(48.dp))
@@ -52,14 +52,14 @@ fun WelcomeScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Login", color = Color.White)
+            Text(stringResource(com.ndejje.nduupdates.R.string.label_login), color = Color.White)
         }
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(
             onClick = { navController.navigate(Routes.REGISTER) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Register", color = MaterialTheme.colorScheme.primary)
+            Text(stringResource(com.ndejje.nduupdates.R.string.btn_register_label), color = MaterialTheme.colorScheme.primary)
         }
     }
 }

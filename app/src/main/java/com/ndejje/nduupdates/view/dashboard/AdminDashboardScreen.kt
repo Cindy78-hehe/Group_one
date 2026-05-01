@@ -32,8 +32,6 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.R
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
@@ -96,7 +94,7 @@ fun AdminDashboardScreen(
                             contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_12)))
-                        Text(stringResource(R.string.title_admin_dashboard), color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.title_admin_dashboard), color = Color.White, style = MaterialTheme.typography.titleLarge)
                     }
                 },
                 actions = {
@@ -232,13 +230,13 @@ fun AdminHomeScreen() {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
                 stringResource(R.string.title_admin_control_panel),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineMedium,
                 color = NDU_Dark_Purple
             )
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
                 stringResource(R.string.desc_admin_panel),
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
@@ -253,7 +251,7 @@ fun AdminHomeScreen() {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(
                         text = stringResource(R.string.title_system_overview),
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelLarge,
                         color = Color.Black
                     )
                 }
@@ -270,7 +268,7 @@ fun AdminPostsScreen(
     onViewComments: (NoticeEntity) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
-        Text(stringResource(R.string.title_manage_items, title), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+        Text(stringResource(R.string.title_manage_items, title), style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple)
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
         
         if (notices.isEmpty()) {
@@ -328,7 +326,11 @@ fun AddUpdateDialog(
         }
     )
     
-    val roles = listOf("All", "Student", "Lecturer")
+    val roles = listOf(
+        stringResource(R.string.role_all),
+        stringResource(R.string.role_student),
+        stringResource(R.string.role_lecturer)
+    )
     val types = listOf(
         stringResource(R.string.label_notice),
         stringResource(R.string.label_news),
@@ -340,7 +342,7 @@ fun AddUpdateDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, style = MaterialTheme.typography.titleLarge) },
         text = {
             LazyColumn {
                 item {
@@ -439,7 +441,7 @@ fun AddUpdateDialog(
                     
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
                     
-                    Text(stringResource(R.string.label_attachments), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+                    Text(stringResource(R.string.label_attachments), style = MaterialTheme.typography.labelLarge, color = NDU_Dark_Purple)
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                     
                     Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_8))) {
@@ -519,11 +521,11 @@ fun CommentsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.title_comments_with_name, notice.title), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple) },
+        title = { Text(stringResource(R.string.title_comments_with_name, notice.title), style = MaterialTheme.typography.titleLarge, color = NDU_Dark_Purple) },
         text = {
             Column(modifier = Modifier.heightIn(max = 400.dp)) {
                 if (comments.isEmpty()) {
-                    Text(stringResource(R.string.msg_no_comments), color = Color.Gray, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_16)))
+                    Text(stringResource(R.string.msg_no_comments), color = Color.Gray, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_16)), style = MaterialTheme.typography.bodyMedium)
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f, fill = false),
@@ -535,8 +537,8 @@ fun CommentsDialog(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(dimensionResource(R.dimen.spacing_8))) {
-                                    Text(comment.author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = NDU_Dark_Purple)
-                                    Text(comment.content, fontSize = 14.sp)
+                                    Text(comment.author, style = MaterialTheme.typography.labelMedium, color = NDU_Dark_Purple)
+                                    Text(comment.content, style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
                         }
