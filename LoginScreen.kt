@@ -2,9 +2,7 @@ package com.ndejje.nduupdates.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,32 +22,34 @@ import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.viewmodel.AuthUiState
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     navController: NavHostController,
     viewModel: AuthViewModel
 ) {
     val authState by viewModel.uiState.collectAsState()
-    
-    var fullNameInput by remember { mutableStateOf("") }
     var emailInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
-    var confirmPassInput by remember { mutableStateOf("") }
+
+    val currentUser by viewModel.currentUser.collectAsState()
 
     LaunchedEffect(authState) {
         if (authState is AuthUiState.Success) {
-            navController.navigate(Routes.LOGIN) {
-                popUpTo(Routes.REGISTER) { inclusive = true }
+            val user = currentUser
+            if (user != null) {
+                when (user.role) {
+                    "ADMIN" -> navController.navigate(Routes.ADMIN_DASHBOARD)
+                    "STAFF" -> navController.navigate(Routes.LECTURER_DASHBOARD)
+                    else -> navController.navigate(Routes.STUDENT_DASHBOARD)
+                }
+                viewModel.resetState()
             }
-            viewModel.resetState()
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(dimensionResource(R.dimen.screenPadding)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -58,25 +58,17 @@ fun RegisterScreen(
             painter = painterResource(id = R.drawable.nduupdate33),
             contentDescription = "NDU Logo",
             modifier = Modifier
-                .size(100.dp),
+                .size(120.dp)
+                .padding(8.dp),
             contentScale = ContentScale.Crop
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
         Text(
-            text = stringResource(R.string.label_register),
+            text = stringResource(R.string.label_login),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
-
-        OutlinedTextField(
-            value = fullNameInput,
-            onValueChange = { fullNameInput = it },
-            label = { Text(stringResource(R.string.label_full_name)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
         OutlinedTextField(
             value = emailInput,
@@ -97,18 +89,7 @@ fun RegisterScreen(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
-
-        OutlinedTextField(
-            value = confirmPassInput,
-            onValueChange = { confirmPassInput = it },
-            label = { Text(stringResource(R.string.label_confirm_password)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-        )
-        Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
+        Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
 
         if (authState is AuthUiState.Error) {
             Text(
@@ -120,28 +101,7 @@ fun RegisterScreen(
         }
 
         Button(
-            onClick = {
-                val email = emailInput.trim().lowercase()
-                
-                // Basic validation
-                if (fullNameInput.isBlank() || emailInput.isBlank() || passwordInput.isBlank()) {
-                    // Ideally, you'd show a UI message here, but for now we'll just return
-                    return@Button
-                }
-                
-                if (passwordInput != confirmPassInput) {
-                    // Handle password mismatch
-                    return@Button
-                }
-
-                val dbRole = when {
-                    email.endsWith("@admin.gmail.com") -> "ADMIN"
-                    email.endsWith("@lect.gmail.com") -> "STAFF"
-                    email.endsWith("@stud.gmail.com") -> "STUDENT"
-                    else -> "STUDENT" // Default role
-                }
-                viewModel.register(fullNameInput, email, passwordInput, dbRole)
-            },
+            onClick = { viewModel.login(emailInput, passwordInput) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dimensionResource(R.dimen.buttonHeight)),
@@ -153,23 +113,23 @@ fun RegisterScreen(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text(stringResource(R.string.btn_register))
+                Text(stringResource(R.string.btn_login))
             }
         }
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
         
         TextButton(onClick = { 
             viewModel.resetState()
-            navController.navigate(Routes.LOGIN) 
+            navController.navigate(Routes.REGISTER) 
         }) {
-            Text(stringResource(R.string.link_back_to_login))
+            Text(stringResource(R.string.link_register))
         }
     }
 }
 
-@Preview(showBackground = true, name = "Register Screen Preview")
+@Preview(showBackground = true, name = "Login Screen Preview")
 @Composable
-fun RegisterScreenPreview() {
+fun LoginScreenPreview() {
     com.ndejje.nduupdates.ui.theme.NduUpdatesTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -183,23 +143,17 @@ fun RegisterScreenPreview() {
                     painter = painterResource(id = R.drawable.nduupdate33),
                     contentDescription = "NDU Logo",
                     modifier = Modifier
-                        .size(100.dp),
+                        .size(120.dp)
+                        .padding(8.dp),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
                 Text(
-                    text = stringResource(R.string.label_register),
+                    text = stringResource(R.string.label_login),
                     style = MaterialTheme.typography.headlineMedium,
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
-
-                OutlinedTextField(
-                    value = "", onValueChange = {},
-                    label = { Text(stringResource(R.string.label_full_name)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
                 OutlinedTextField(
                     value = "", onValueChange = {},
@@ -219,11 +173,11 @@ fun RegisterScreenPreview() {
                     onClick = {},
                     modifier = Modifier.fillMaxWidth().height(dimensionResource(R.dimen.buttonHeight))
                 ) {
-                    Text(stringResource(R.string.btn_register))
+                    Text(stringResource(R.string.btn_login))
                 }
                 Spacer(Modifier.height(dimensionResource(R.dimen.spacingSmall)))
                 TextButton(onClick = {}) {
-                    Text(stringResource(R.string.link_back_to_login))
+                    Text(stringResource(R.string.link_register))
                 }
             }
         }
