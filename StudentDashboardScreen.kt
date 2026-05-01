@@ -1,10 +1,15 @@
 package com.ndejje.nduupdates.view.dashboard
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
@@ -12,18 +17,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.R
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
+import com.ndejje.nduupdates.view.components.NoticeCard
+import com.ndejje.nduupdates.view.components.ProfileDialog
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 import com.ndejje.nduupdates.viewmodel.NoticeViewModel
 
@@ -35,7 +51,12 @@ fun StudentDashboardScreen(
     authViewModel: AuthViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "Notice", "News", "Events")
+    val tabs = listOf(
+        stringResource(R.string.label_home),
+        stringResource(R.string.label_notice),
+        stringResource(R.string.label_news),
+        stringResource(R.string.label_events)
+    )
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
     var showProfileDialog by remember { mutableStateOf(false) }
     var showCommentsForNotice by remember { mutableStateOf<NoticeEntity?>(null) }
@@ -44,30 +65,17 @@ fun StudentDashboardScreen(
     val notices by noticeViewModel.notices.collectAsState()
 
     if (showProfileDialog) {
-        AlertDialog(
-            onDismissRequest = { showProfileDialog = false },
-            title = { Text("Student Profile") },
-            text = {
-                Column {
-                    Text("Name: ${currentUser?.username ?: "John Doe"}", fontWeight = FontWeight.Bold)
-                    Text("Role: ${currentUser?.role ?: "Student"}")
-                    Text("Email: ${currentUser?.email ?: "N/A"}")
-                }
+        ProfileDialog(
+            user = currentUser,
+            onDismiss = { showProfileDialog = false },
+            onSave = { name, uri ->
+                authViewModel.updateProfile(name, uri)
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    showProfileDialog = false
-                    authViewModel.logout()
-                    navController.navigate(Routes.WELCOME) {
-                        popUpTo(0)
-                    }
-                }) {
-                    Text("Logout", color = Color.Red)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showProfileDialog = false }) {
-                    Text("Close")
+            onLogout = {
+                showProfileDialog = false
+                authViewModel.logout()
+                navController.navigate(Routes.WELCOME) {
+                    popUpTo(0)
                 }
             }
         )
@@ -79,13 +87,14 @@ fun StudentDashboardScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.nduupdates_logo),
-                            contentDescription = "NDU Logo",
-                            modifier = Modifier.size(40.dp)
+                            painter = painterResource(id = R.drawable.nduupdates333),
+                            contentDescription = stringResource(R.string.content_description_logo),
+                            modifier = Modifier.size(dimensionResource(R.dimen.icon_size_xlarge)),
+                            contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_12)))
                         Text(
-                            text = "NDU Updates",
+                            text = stringResource(R.string.title_ndu_updates),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -94,12 +103,23 @@ fun StudentDashboardScreen(
                 },
                 actions = {
                     IconButton(onClick = { showProfileDialog = true }) {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = "Profile",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
+                        if (currentUser?.profilePictureUri != null) {
+                            AsyncImage(
+                                model = currentUser?.profilePictureUri,
+                                contentDescription = stringResource(R.string.content_description_profile),
+                                modifier = Modifier
+                                    .size(dimensionResource(R.dimen.top_bar_icon_size))
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = stringResource(R.string.content_description_profile),
+                                tint = Color.White,
+                                modifier = Modifier.size(dimensionResource(R.dimen.icon_size_large))
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NDU_Dark_Purple)
@@ -179,24 +199,24 @@ fun StudentDashboardScreen(
 @Composable
 fun HomeScreen() {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
                 "Welcome to NDU Updates",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
                 "Stay informed with the latest information from Ndejje University.",
                 color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_32)))
         }
         
         item {
@@ -222,70 +242,25 @@ fun PostsScreen(
     notices: List<NoticeEntity>,
     onViewComments: (NoticeEntity) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
         Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
 
         if (notices.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No $title found.", color = Color.Gray)
+                Text(stringResource(R.string.msg_no_items_found, title), color = Color.Gray)
             }
         } else {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_inner_padding)),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(notices) { update ->
-                    PostCard(update, onComment = { onViewComments(update) })
+                    NoticeCard(
+                        notice = update,
+                        onComment = { onViewComments(update) }
+                    )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun PostCard(notice: NoticeEntity, onComment: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, NDU_Light_Pink)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(NDU_Light_Pink, androidx.compose.foundation.shape.CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(notice.author.take(1), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(notice.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = NDU_Dark_Purple)
-                    Text(notice.author, fontSize = 12.sp, color = Color.Gray)
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(notice.content, fontSize = 14.sp, color = Color.DarkGray)
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Button(
-                onClick = onComment,
-                colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.stat_notify_chat),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = NDU_Dark_Purple
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Comment", color = NDU_Dark_Purple, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -294,15 +269,15 @@ fun PostCard(notice: NoticeEntity, onComment: () -> Unit) {
 @Composable
 fun SimplePlaceholderScreen(title: String) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         item {
             Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(64.dp), tint = NDU_Light_Pink)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
             Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-            Text("No new $title at the moment.", color = Color.Gray)
+            Text(stringResource(R.string.msg_no_items_found, title), color = Color.Gray)
         }
     }
 }
