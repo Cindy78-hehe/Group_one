@@ -52,7 +52,7 @@ fun AdminDashboardScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.nduupdate33),
+                            painter = painterResource(id = R.drawable.nduupdates333),
                             contentDescription = "NDU Logo",
                             modifier = Modifier.size(40.dp),
                             contentScale = ContentScale.Crop
