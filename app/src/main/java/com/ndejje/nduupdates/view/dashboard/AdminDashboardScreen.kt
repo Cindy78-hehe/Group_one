@@ -1,5 +1,6 @@
 package com.ndejje.nduupdates.view.dashboard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,11 +50,10 @@ fun AdminDashboardScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        Image(
+                            painter = painterResource(id = R.drawable.nduupdates_logo),
                             contentDescription = "NDU Logo",
-                            modifier = Modifier.size(40.dp),
-                            tint = Color.Unspecified
+                            modifier = Modifier.size(40.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text("Admin Dashboard", color = Color.White, fontWeight = FontWeight.Bold)
