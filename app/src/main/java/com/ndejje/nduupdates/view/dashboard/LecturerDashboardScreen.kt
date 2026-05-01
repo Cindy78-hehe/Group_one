@@ -29,7 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.R
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
@@ -47,7 +51,12 @@ fun LecturerDashboardScreen(
     authViewModel: AuthViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "Notice", "News", "Events")
+    val tabs = listOf(
+        stringResource(R.string.label_home),
+        stringResource(R.string.label_notice),
+        stringResource(R.string.label_news),
+        stringResource(R.string.label_events)
+    )
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
     var showProfileDialog by remember { mutableStateOf(false) }
     var showCommentsForNotice by remember { mutableStateOf<NoticeEntity?>(null) }
@@ -79,13 +88,13 @@ fun LecturerDashboardScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.nduupdates333),
-                            contentDescription = "NDU Logo",
-                            modifier = Modifier.size(40.dp),
+                            contentDescription = stringResource(R.string.content_description_logo),
+                            modifier = Modifier.size(dimensionResource(R.dimen.icon_size_xlarge)),
                             contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_12)))
                         Text(
-                            text = "NDU Updates",
+                            text = stringResource(R.string.title_ndu_updates),
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -97,18 +106,18 @@ fun LecturerDashboardScreen(
                         if (currentUser?.profilePictureUri != null) {
                             AsyncImage(
                                 model = currentUser?.profilePictureUri,
-                                contentDescription = "Profile",
+                                contentDescription = stringResource(R.string.content_description_profile),
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(dimensionResource(R.dimen.top_bar_icon_size))
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
                         } else {
                             Icon(
                                 Icons.Default.AccountCircle,
-                                contentDescription = "Profile",
+                                contentDescription = stringResource(R.string.content_description_profile),
                                 tint = Color.White,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(dimensionResource(R.dimen.icon_size_large))
                             )
                         }
                     }
@@ -190,24 +199,24 @@ fun LecturerDashboardScreen(
 @Composable
 fun LecturerHomeScreen() {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
                 "Lecturer Dashboard",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
                 "Welcome back! Stay informed with the latest information from Ndejje University.",
                 color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_32)))
         }
         
         item {
@@ -233,17 +242,17 @@ fun LecturerPostsScreen(
     notices: List<NoticeEntity>,
     onViewComments: (NoticeEntity) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
         Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
 
         if (notices.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No $title found.", color = Color.Gray)
+                Text(stringResource(R.string.msg_no_items_found, title), color = Color.Gray)
             }
         } else {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.card_inner_padding)),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(notices) { update ->

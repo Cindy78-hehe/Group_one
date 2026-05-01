@@ -29,7 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.R
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
@@ -48,7 +52,12 @@ fun AdminDashboardScreen(
     authViewModel: AuthViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "Posts", "News", "Events")
+    val tabs = listOf(
+        stringResource(R.string.label_home),
+        stringResource(R.string.label_posts),
+        stringResource(R.string.label_news),
+        stringResource(R.string.label_events)
+    )
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -82,12 +91,12 @@ fun AdminDashboardScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.nduupdates333),
-                            contentDescription = "NDU Logo",
-                            modifier = Modifier.size(40.dp),
+                            contentDescription = stringResource(R.string.content_description_logo),
+                            modifier = Modifier.size(dimensionResource(R.dimen.icon_size_xlarge)),
                             contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("Admin Dashboard", color = Color.White, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_12)))
+                        Text(stringResource(R.string.title_admin_dashboard), color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 },
                 actions = {
@@ -95,18 +104,18 @@ fun AdminDashboardScreen(
                         if (currentUser?.profilePictureUri != null) {
                             AsyncImage(
                                 model = currentUser?.profilePictureUri,
-                                contentDescription = "Profile",
+                                contentDescription = stringResource(R.string.content_description_profile),
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(dimensionResource(R.dimen.top_bar_icon_size))
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
                         } else {
                             Icon(
                                 Icons.Default.AccountCircle,
-                                contentDescription = "Profile",
+                                contentDescription = stringResource(R.string.content_description_profile),
                                 tint = Color.White,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(dimensionResource(R.dimen.icon_size_large))
                             )
                         }
                     }
@@ -145,7 +154,7 @@ fun AdminDashboardScreen(
                     containerColor = NDU_Dark_Purple,
                     contentColor = Color.White
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Post")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.btn_post))
                 }
             }
         }
@@ -216,24 +225,24 @@ fun AdminDashboardScreen(
 @Composable
 fun AdminHomeScreen() {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_20)))
             Text(
-                "Admin Control Panel",
+                stringResource(R.string.title_admin_control_panel),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
             Text(
-                "Manage university updates, news, and events from here.",
+                stringResource(R.string.desc_admin_panel),
                 color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.card_inner_padding))
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_32)))
         }
         
         item {
@@ -243,7 +252,7 @@ fun AdminHomeScreen() {
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "System Overview",
+                        text = stringResource(R.string.title_system_overview),
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
@@ -260,16 +269,16 @@ fun AdminPostsScreen(
     noticeViewModel: NoticeViewModel,
     onViewComments: (NoticeEntity) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Manage $title", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.card_inner_padding))) {
+        Text(stringResource(R.string.title_manage_items, title), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.card_inner_padding)))
         
         if (notices.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No $title posted yet.", color = Color.Gray)
+                Text(stringResource(R.string.msg_no_items_posted, title), color = Color.Gray)
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize()) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_12)), modifier = Modifier.fillMaxSize()) {
                 items(notices) { notice ->
                     NoticeCard(
                         notice = notice, 
@@ -320,30 +329,34 @@ fun AddUpdateDialog(
     )
     
     val roles = listOf("All", "Student", "Lecturer")
-    val types = listOf("Notice", "News", "Event")
+    val types = listOf(
+        stringResource(R.string.label_notice),
+        stringResource(R.string.label_news),
+        stringResource(R.string.label_event)
+    )
     
     var roleExpanded by remember { mutableStateOf(false) }
     var typeExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Post New $postType", color = NDU_Dark_Purple, fontWeight = FontWeight.Bold) },
+        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, fontWeight = FontWeight.Bold) },
         text = {
             LazyColumn {
                 item {
                     OutlinedTextField(
                         value = title, 
                         onValueChange = { title = it }, 
-                        label = { Text("Title") },
+                        label = { Text(stringResource(R.string.label_title)) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = NDU_Dark_Purple,
                             focusedLabelColor = NDU_Dark_Purple
                         )
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_12)))
                     
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_8))) {
                         ExposedDropdownMenuBox(
                             expanded = typeExpanded,
                             onExpandedChange = { typeExpanded = !typeExpanded },
@@ -353,7 +366,7 @@ fun AddUpdateDialog(
                                 value = postType,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Type") },
+                                label = { Text(stringResource(R.string.label_type)) },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -386,7 +399,7 @@ fun AddUpdateDialog(
                                 value = targetRole,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Audience") },
+                                label = { Text(stringResource(R.string.label_audience)) },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = roleExpanded) },
                                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -411,11 +424,11 @@ fun AddUpdateDialog(
                         }
                     }
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_12)))
                     OutlinedTextField(
                         value = content, 
                         onValueChange = { content = it }, 
-                        label = { Text("Content") },
+                        label = { Text(stringResource(R.string.label_content)) },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 3,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -424,53 +437,53 @@ fun AddUpdateDialog(
                         )
                     )
                     
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
                     
-                    Text("Attachments", fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(stringResource(R.string.label_attachments), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                     
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_8))) {
                         OutlinedButton(
                             onClick = { imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.Image, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Image", fontSize = 12.sp)
+                            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_4)))
+                            Text(stringResource(R.string.label_image), fontSize = 12.sp)
                         }
                         OutlinedButton(
                             onClick = { filePicker.launch("*/*") },
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.AttachFile, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("File", fontSize = 12.sp)
+                            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_4)))
+                            Text(stringResource(R.string.label_file), fontSize = 12.sp)
                         }
                     }
                     
                     if (attachmentUri != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(NDU_Light_Pink.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                                .padding(8.dp)
+                                .padding(dimensionResource(R.dimen.spacing_8))
                         ) {
                             Icon(
                                 if (attachmentType == "IMAGE") Icons.Default.Image else Icons.Default.Description,
                                 contentDescription = null,
                                 tint = NDU_Dark_Purple,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(dimensionResource(R.dimen.icon_size_xlarge).div(2))
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_8)))
                             Text(
-                                "Attachment selected",
+                                stringResource(R.string.label_attachment_selected),
                                 modifier = Modifier.weight(1f),
                                 fontSize = 12.sp
                             )
-                            IconButton(onClick = { attachmentUri = null; attachmentType = null }, modifier = Modifier.size(24.dp)) {
-                                Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Red, modifier = Modifier.size(16.dp))
+                            IconButton(onClick = { attachmentUri = null; attachmentType = null }, modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium))) {
+                                Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Red, modifier = Modifier.size(dimensionResource(R.dimen.icon_size_small)))
                             }
                         }
                     }
@@ -486,10 +499,10 @@ fun AddUpdateDialog(
                 },
                 enabled = title.isNotBlank() && content.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Dark_Purple)
-            ) { Text("Post", color = Color.White) }
+            ) { Text(stringResource(R.string.btn_post), color = Color.White) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel", color = NDU_Dark_Purple) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_cancel), color = NDU_Dark_Purple) }
         }
     )
 }
@@ -506,22 +519,22 @@ fun CommentsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Comments - ${notice.title}", fontWeight = FontWeight.Bold, color = NDU_Dark_Purple) },
+        title = { Text(stringResource(R.string.title_comments_with_name, notice.title), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple) },
         text = {
             Column(modifier = Modifier.heightIn(max = 400.dp)) {
                 if (comments.isEmpty()) {
-                    Text("No comments yet.", color = Color.Gray, modifier = Modifier.padding(vertical = 16.dp))
+                    Text(stringResource(R.string.msg_no_comments), color = Color.Gray, modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_16)))
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f, fill = false),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_8))
                     ) {
                         items(comments) { comment ->
                             Card(
                                 colors = CardDefaults.cardColors(containerColor = NDU_Light_Pink.copy(alpha = 0.3f)),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Column(modifier = Modifier.padding(8.dp)) {
+                                Column(modifier = Modifier.padding(dimensionResource(R.dimen.spacing_8))) {
                                     Text(comment.author, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = NDU_Dark_Purple)
                                     Text(comment.content, fontSize = 14.sp)
                                 }
@@ -529,11 +542,11 @@ fun CommentsDialog(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
                 OutlinedTextField(
                     value = newComment,
                     onValueChange = { newComment = it },
-                    label = { Text("Add a comment") },
+                    label = { Text(stringResource(R.string.label_add_comment)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = NDU_Dark_Purple,
@@ -557,10 +570,10 @@ fun CommentsDialog(
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Dark_Purple)
-            ) { Text("Send") }
+            ) { Text(stringResource(R.string.btn_send)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.btn_close)) }
         }
     )
 }

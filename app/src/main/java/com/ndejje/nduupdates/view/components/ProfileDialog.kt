@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.ndejje.nduupdates.data.model.UserEntity
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import com.ndejje.nduupdates.R
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
 
@@ -46,7 +49,7 @@ fun ProfileDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "User Profile",
+                stringResource(R.string.title_user_profile),
                 fontWeight = FontWeight.Bold,
                 color = NDU_Dark_Purple,
                 modifier = Modifier.fillMaxWidth()
@@ -59,7 +62,7 @@ fun ProfileDialog(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(100.dp)
+                        .size(dimensionResource(R.dimen.profile_image_size))
                         .clickable {
                             photoPickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -70,9 +73,9 @@ fun ProfileDialog(
                     if (profilePicUri != null) {
                         AsyncImage(
                             model = profilePicUri,
-                            contentDescription = "Profile Picture",
+                            contentDescription = stringResource(R.string.content_description_profile),
                             modifier = Modifier
-                                .size(100.dp)
+                                .size(dimensionResource(R.dimen.profile_image_size))
                                 .clip(CircleShape)
                                 .background(NDU_Light_Pink),
                             contentScale = ContentScale.Crop
@@ -80,7 +83,7 @@ fun ProfileDialog(
                     } else {
                         Box(
                             modifier = Modifier
-                                .size(100.dp)
+                                .size(dimensionResource(R.dimen.profile_image_size))
                                 .clip(CircleShape)
                                 .background(NDU_Light_Pink),
                             contentAlignment = Alignment.Center
@@ -88,7 +91,7 @@ fun ProfileDialog(
                             Icon(
                                 Icons.Default.Person,
                                 contentDescription = null,
-                                modifier = Modifier.size(60.dp),
+                                modifier = Modifier.size(dimensionResource(R.dimen.profile_image_size).times(0.6f)),
                                 tint = NDU_Dark_Purple
                             )
                         }
@@ -96,26 +99,26 @@ fun ProfileDialog(
                     
                     Surface(
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(dimensionResource(R.dimen.spacing_32))
                             .clip(CircleShape),
                         color = NDU_Dark_Purple,
-                        tonalElevation = 4.dp
+                        tonalElevation = dimensionResource(R.dimen.cardElevation)
                     ) {
                         Icon(
                             Icons.Default.Edit,
-                            contentDescription = "Change Picture",
-                            modifier = Modifier.padding(6.dp),
+                            contentDescription = stringResource(R.string.content_description_edit_picture),
+                            modifier = Modifier.padding(dimensionResource(R.dimen.spacing_8).div(1.33f)),
                             tint = Color.White
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.label_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = NDU_Dark_Purple,
@@ -123,16 +126,16 @@ fun ProfileDialog(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                 
                 Text(
-                    text = "Email: ${user?.email ?: "N/A"}",
+                    text = stringResource(R.string.label_email_display, user?.email ?: "N/A"),
                     fontSize = 14.sp,
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.Start)
                 )
                 Text(
-                    text = "Role: ${user?.role ?: "N/A"}",
+                    text = stringResource(R.string.label_role_display, user?.role ?: "N/A"),
                     fontSize = 14.sp,
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.Start)
@@ -147,16 +150,16 @@ fun ProfileDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Dark_Purple)
             ) {
-                Text("Save Changes")
+                Text(stringResource(R.string.btn_save_changes))
             }
         },
         dismissButton = {
             Row {
                 TextButton(onClick = onLogout) {
-                    Text("Logout", color = Color.Red)
+                    Text(stringResource(R.string.btn_logout), color = Color.Red)
                 }
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.btn_cancel))
                 }
             }
         }

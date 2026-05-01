@@ -15,7 +15,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import com.ndejje.nduupdates.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,20 +47,20 @@ fun NoticeCard(
     val dateString = try {
         sdf.format(Date(notice.timestamp))
     } catch (e: Exception) {
-        "Recently"
+        stringResource(R.string.label_recent)
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            .padding(vertical = dimensionResource(R.dimen.spacing_4)),
+        elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(R.dimen.cardElevation)),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = androidx.compose.foundation.BorderStroke(1.dp, NDU_Light_Pink)
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(dimensionResource(R.dimen.card_inner_padding))
                 .fillMaxWidth()
         ) {
             Row(
@@ -71,13 +74,13 @@ fun NoticeCard(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(dimensionResource(R.dimen.icon_size_xlarge))
                             .background(NDU_Light_Pink, androidx.compose.foundation.shape.CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(notice.author.take(1), fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
                     }
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(dimensionResource(R.dimen.spacing_12)))
                     Column {
                         Text(
                             text = notice.title,
@@ -98,18 +101,18 @@ fun NoticeCard(
                 if (showDelete) {
                     IconButton(
                         onClick = onDelete,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium))
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.label_delete),
                             tint = Color.Red
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_12)))
 
             Text(
                 text = notice.content,
@@ -118,14 +121,14 @@ fun NoticeCard(
             )
 
             if (notice.attachmentUri != null) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_12)))
                 if (notice.attachmentType == "IMAGE") {
                     AsyncImage(
                         model = notice.attachmentUri,
-                        contentDescription = "Attachment",
+                        contentDescription = stringResource(R.string.content_description_attachment),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
+                            .height(dimensionResource(R.dimen.attachment_image_height))
                             .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
@@ -145,17 +148,22 @@ fun NoticeCard(
                                     // Handle error
                                 }
                             }
-                            .padding(12.dp),
+                            .padding(dimensionResource(R.dimen.spacing_12)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(Icons.Default.Description, contentDescription = null, tint = NDU_Dark_Purple)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("View Document", fontSize = 14.sp, color = NDU_Dark_Purple, fontWeight = FontWeight.Medium)
+                        Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_8)))
+                        Text(
+                            stringResource(R.string.label_view_document),
+                            fontSize = 14.sp,
+                            color = NDU_Dark_Purple,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_16)))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -166,8 +174,8 @@ fun NoticeCard(
                     if (showTarget) {
                         Badge(containerColor = NDU_Light_Pink.copy(alpha = 0.5f)) {
                             Text(
-                                text = "To: ${notice.targetRole}",
-                                modifier = Modifier.padding(horizontal = 4.dp),
+                                text = stringResource(R.string.label_to, notice.targetRole),
+                                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.badge_padding_horizontal)),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = NDU_Dark_Purple
                             )
@@ -178,17 +186,25 @@ fun NoticeCard(
                 Button(
                     onClick = onComment,
                     colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    contentPadding = PaddingValues(
+                        horizontal = dimensionResource(R.dimen.button_padding_horizontal),
+                        vertical = dimensionResource(R.dimen.button_padding_vertical)
+                    ),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = android.R.drawable.stat_notify_chat),
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_small)),
                         tint = NDU_Dark_Purple
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Comments", color = NDU_Dark_Purple, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_8)))
+                    Text(
+                        stringResource(R.string.label_comments),
+                        color = NDU_Dark_Purple,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
