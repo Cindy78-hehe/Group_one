@@ -184,27 +184,28 @@ fun AdminDashboardScreen(
     }
 
     if (showAddDialog) {
-        val initialType = when(selectedTab) {
-            2 -> "News"
-            3 -> "Event"
-            else -> "Notice"
-        }
+        val createNoticeState by noticeViewModel.createNoticeState.collectAsState()
+        
         AddUpdateDialog(
-            initialType = initialType,
+            initialType = if (createNoticeState.type == "Notice") {
+                when(selectedTab) {
+                    2 -> "News"
+                    3 -> "Event"
+                    else -> "Notice"
+                }
+            } else createNoticeState.type,
+            state = createNoticeState,
+            onTitleChange = noticeViewModel::onTitleChange,
+            onContentChange = noticeViewModel::onContentChange,
+            onTargetRoleChange = noticeViewModel::onTargetRoleChange,
+            onTypeChange = noticeViewModel::onTypeChange,
+            onAttachmentChange = noticeViewModel::onAttachmentChange,
             onDismiss = { showAddDialog = false },
-            onPost = { title, content, target, postType, attachmentUri, attachmentType ->
-                val newNotice = NoticeEntity(
-                    title = title,
-                    content = content,
-                    targetRole = target,
+            onPost = {
+                noticeViewModel.addNotice(
                     author = currentUser?.username ?: "Admin",
-                    authorRole = "ADMIN",
-                    type = postType,
-                    timestamp = System.currentTimeMillis(),
-                    attachmentUri = attachmentUri,
-                    attachmentType = attachmentType
+                    authorRole = "ADMIN"
                 )
-                noticeViewModel.addNotice(newNotice)
                 showAddDialog = false
             }
         )
@@ -295,23 +296,21 @@ fun AdminPostsScreen(
 @Composable
 fun AddUpdateDialog(
     initialType: String,
+    state: com.ndejje.nduupdates.viewmodel.CreateNoticeState,
+    onTitleChange: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onTargetRoleChange: (String) -> Unit,
+    onTypeChange: (String) -> Unit,
+    onAttachmentChange: (String?, String?) -> Unit,
     onDismiss: () -> Unit, 
-    onPost: (String, String, String, String, String?, String?) -> Unit
+    onPost: () -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var targetRole by remember { mutableStateOf("All") }
-    var postType by remember { mutableStateOf(initialType) }
-    var attachmentUri by remember { mutableStateOf<Uri?>(null) }
-    var attachmentType by remember { mutableStateOf<String?>(null) }
-    
     val context = LocalContext.current
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> 
             if (uri != null) {
-                attachmentUri = uri
-                attachmentType = "IMAGE"
+                onAttachmentChange(uri.toString(), "IMAGE")
             }
         }
     )
@@ -320,8 +319,7 @@ fun AddUpdateDialog(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             if (uri != null) {
-                attachmentUri = uri
-                attachmentType = "FILE"
+                onAttachmentChange(uri.toString(), "FILE")
             }
         }
     )
@@ -342,13 +340,13 @@ fun AddUpdateDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.title_post_new, postType), color = NDU_Dark_Purple, style = MaterialTheme.typography.titleLarge) },
+        title = { Text(stringResource(R.string.title_post_new, state.type), color = NDU_Dark_Purple, style = MaterialTheme.typography.titleLarge) },
         text = {
             LazyColumn {
                 item {
                     OutlinedTextField(
-                        value = title, 
-                        onValueChange = { title = it }, 
+                        value = state.title, 
+                        onValueChange = onTitleChange, 
                         label = { Text(stringResource(R.string.label_title)) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -365,7 +363,7 @@ fun AddUpdateDialog(
                             modifier = Modifier.weight(1f)
                         ) {
                             OutlinedTextField(
-                                value = postType,
+                                value = state.type,
                                 onValueChange = {},
                                 readOnly = true,
                                 label = { Text(stringResource(R.string.label_type)) },
@@ -384,7 +382,7 @@ fun AddUpdateDialog(
                                     DropdownMenuItem(
                                         text = { Text(type) },
                                         onClick = {
-                                            postType = type
+                                            onTypeChange(type)
                                             typeExpanded = false
                                         }
                                     )
@@ -398,7 +396,7 @@ fun AddUpdateDialog(
                             modifier = Modifier.weight(1f)
                         ) {
                             OutlinedTextField(
-                                value = targetRole,
+                                value = state.targetRole,
                                 onValueChange = {},
                                 readOnly = true,
                                 label = { Text(stringResource(R.string.label_audience)) },
@@ -417,7 +415,7 @@ fun AddUpdateDialog(
                                     DropdownMenuItem(
                                         text = { Text(role) },
                                         onClick = {
-                                            targetRole = role
+                                            onTargetRoleChange(role)
                                             roleExpanded = false
                                         }
                                     )
@@ -428,8 +426,8 @@ fun AddUpdateDialog(
                     
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_12)))
                     OutlinedTextField(
-                        value = content, 
-                        onValueChange = { content = it }, 
+                        value = state.content, 
+                        onValueChange = onContentChange, 
                         label = { Text(stringResource(R.string.label_content)) },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 3,
@@ -463,7 +461,7 @@ fun AddUpdateDialog(
                         }
                     }
                     
-                    if (attachmentUri != null) {
+                    if (state.attachmentUri != null) {
                         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_8)))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -473,7 +471,7 @@ fun AddUpdateDialog(
                                 .padding(dimensionResource(R.dimen.spacing_8))
                         ) {
                             Icon(
-                                if (attachmentType == "IMAGE") Icons.Default.Image else Icons.Default.Description,
+                                if (state.attachmentType == "IMAGE") Icons.Default.Image else Icons.Default.Description,
                                 contentDescription = null,
                                 tint = NDU_Dark_Purple,
                                 modifier = Modifier.size(dimensionResource(R.dimen.icon_size_xlarge).div(2))
@@ -484,7 +482,7 @@ fun AddUpdateDialog(
                                 modifier = Modifier.weight(1f),
                                 fontSize = 12.sp
                             )
-                            IconButton(onClick = { attachmentUri = null; attachmentType = null }, modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium))) {
+                            IconButton(onClick = { onAttachmentChange(null, null) }, modifier = Modifier.size(dimensionResource(R.dimen.icon_size_medium))) {
                                 Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Red, modifier = Modifier.size(dimensionResource(R.dimen.icon_size_small)))
                             }
                         }
@@ -494,12 +492,8 @@ fun AddUpdateDialog(
         },
         confirmButton = {
             Button(
-                onClick = { 
-                    if (title.isNotBlank() && content.isNotBlank()) {
-                        onPost(title, content, targetRole, postType, attachmentUri?.toString(), attachmentType) 
-                    }
-                },
-                enabled = title.isNotBlank() && content.isNotBlank(),
+                onClick = onPost,
+                enabled = state.title.isNotBlank() && state.content.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Dark_Purple)
             ) { Text(stringResource(R.string.btn_post), color = Color.White) }
         },

@@ -31,10 +31,8 @@ fun RegisterScreen(
     viewModel: AuthViewModel
 ) {
     val authState by viewModel.uiState.collectAsState()
+    val registerState by viewModel.registerState.collectAsState()
     
-    var fullNameInput by remember { mutableStateOf("") }
-    var emailInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
     var confirmPassInput by remember { mutableStateOf("") }
 
     LaunchedEffect(authState) {
@@ -70,8 +68,8 @@ fun RegisterScreen(
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
 
         OutlinedTextField(
-            value = fullNameInput,
-            onValueChange = { fullNameInput = it },
+            value = registerState.name,
+            onValueChange = { viewModel.onRegisterNameChange(it) },
             label = { Text(stringResource(R.string.label_full_name)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -79,8 +77,18 @@ fun RegisterScreen(
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
         OutlinedTextField(
-            value = emailInput,
-            onValueChange = { emailInput = it },
+            value = registerState.email,
+            onValueChange = { 
+                viewModel.onRegisterEmailChange(it)
+                val email = it.trim().lowercase()
+                val dbRole = when {
+                    email.endsWith("@admin.gmail.com") -> "ADMIN"
+                    email.endsWith("@lect.gmail.com") -> "STAFF"
+                    email.endsWith("@stud.gmail.com") -> "STUDENT"
+                    else -> "STUDENT"
+                }
+                viewModel.onRegisterRoleChange(dbRole)
+            },
             label = { Text(stringResource(R.string.label_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -89,8 +97,8 @@ fun RegisterScreen(
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
         OutlinedTextField(
-            value = passwordInput,
-            onValueChange = { passwordInput = it },
+            value = registerState.pass,
+            onValueChange = { viewModel.onRegisterPasswordChange(it) },
             label = { Text(stringResource(R.string.label_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -121,24 +129,11 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                val email = emailInput.trim().lowercase()
-                
-                // Basic validation
-                if (fullNameInput.isBlank() || emailInput.isBlank() || passwordInput.isBlank()) {
+                if (registerState.pass != confirmPassInput) {
+                    // We can handle this through UI state too if needed
                     return@Button
                 }
-                
-                if (passwordInput != confirmPassInput) {
-                    return@Button
-                }
-
-                val dbRole = when {
-                    email.endsWith("@admin.gmail.com") -> "ADMIN"
-                    email.endsWith("@lect.gmail.com") -> "STAFF"
-                    email.endsWith("@stud.gmail.com") -> "STUDENT"
-                    else -> "STUDENT" // Default role
-                }
-                viewModel.register(fullNameInput, email, passwordInput, dbRole)
+                viewModel.register()
             },
             modifier = Modifier
                 .fillMaxWidth()

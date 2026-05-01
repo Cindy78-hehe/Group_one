@@ -24,20 +24,20 @@ fun CreateNoticeScreen(
     authViewModel: AuthViewModel
 ) {
     val currentUser by authViewModel.currentUser.collectAsState()
+    val createNoticeState by noticeViewModel.createNoticeState.collectAsState()
     
     CreateNoticeContent(
+        state = createNoticeState,
+        onTitleChange = noticeViewModel::onTitleChange,
+        onContentChange = noticeViewModel::onContentChange,
+        onTargetRoleChange = noticeViewModel::onTargetRoleChange,
         onBack = { navController.popBackStack() },
-        onPost = { title, content, targetRole ->
+        onPost = {
             val user = currentUser
             if (user != null) {
                 noticeViewModel.addNotice(
-                    NoticeEntity(
-                        title = title,
-                        content = content,
-                        author = user.username,
-                        authorRole = user.role,
-                        targetRole = targetRole
-                    )
+                    author = user.username,
+                    authorRole = user.role
                 )
                 navController.popBackStack()
             }
@@ -48,18 +48,18 @@ fun CreateNoticeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNoticeContent(
+    state: com.ndejje.nduupdates.viewmodel.CreateNoticeState,
+    onTitleChange: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onTargetRoleChange: (String) -> Unit,
     onBack: () -> Unit,
-    onPost: (String, String, String) -> Unit
+    onPost: () -> Unit
 ) {
     val roleAll = stringResource(R.string.role_all)
     val roleStudent = stringResource(R.string.role_student)
     val roleStaff = stringResource(R.string.role_staff)
     
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var targetRole by remember { mutableStateOf(roleAll) }
     var expanded by remember { mutableStateOf(false) }
-    
     val roles = listOf(roleAll, roleStudent, roleStaff)
 
     Scaffold(
@@ -85,16 +85,16 @@ fun CreateNoticeContent(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacingMedium))
         ) {
             OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
+                value = state.title,
+                onValueChange = onTitleChange,
                 label = { Text(stringResource(R.string.label_title)) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.bodyLarge
             )
 
             OutlinedTextField(
-                value = content,
-                onValueChange = { content = it },
+                value = state.content,
+                onValueChange = onContentChange,
                 label = { Text(stringResource(R.string.label_content)) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,7 +108,7 @@ fun CreateNoticeContent(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = targetRole,
+                    value = state.targetRole,
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.label_audience)) },
@@ -124,7 +124,7 @@ fun CreateNoticeContent(
                         DropdownMenuItem(
                             text = { Text(role) },
                             onClick = {
-                                targetRole = role
+                                onTargetRoleChange(role)
                                 expanded = false
                             }
                         )
@@ -133,9 +133,9 @@ fun CreateNoticeContent(
             }
 
             Button(
-                onClick = { onPost(title, content, targetRole) },
+                onClick = onPost,
                 modifier = Modifier.fillMaxWidth().height(dimensionResource(R.dimen.buttonHeight)),
-                enabled = title.isNotBlank() && content.isNotBlank()
+                enabled = state.title.isNotBlank() && state.content.isNotBlank()
             ) {
                 Text(stringResource(R.string.btn_post_notice), style = MaterialTheme.typography.labelLarge)
             }
@@ -149,8 +149,12 @@ fun CreateNoticeScreenPreview() {
     com.ndejje.nduupdates.ui.theme.NduUpdatesTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             CreateNoticeContent(
+                state = com.ndejje.nduupdates.viewmodel.CreateNoticeState(),
+                onTitleChange = {},
+                onContentChange = {},
+                onTargetRoleChange = {},
                 onBack = {},
-                onPost = { _, _, _ -> }
+                onPost = {}
             )
         }
     }

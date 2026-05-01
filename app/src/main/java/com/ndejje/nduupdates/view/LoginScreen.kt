@@ -28,9 +28,7 @@ fun LoginScreen(
     viewModel: AuthViewModel
 ) {
     val authState by viewModel.uiState.collectAsState()
-    var emailInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
-
+    val loginState by viewModel.loginState.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
 
     LaunchedEffect(authState) {
@@ -71,8 +69,8 @@ fun LoginScreen(
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingLarge)))
 
         OutlinedTextField(
-            value = emailInput,
-            onValueChange = { emailInput = it },
+            value = loginState.email,
+            onValueChange = { viewModel.onLoginEmailChange(it) },
             label = { Text(stringResource(R.string.label_email)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -81,8 +79,8 @@ fun LoginScreen(
         Spacer(Modifier.height(dimensionResource(R.dimen.spacingMedium)))
 
         OutlinedTextField(
-            value = passwordInput,
-            onValueChange = { passwordInput = it },
+            value = loginState.pass,
+            onValueChange = { viewModel.onLoginPasswordChange(it) },
             label = { Text(stringResource(R.string.label_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -101,7 +99,7 @@ fun LoginScreen(
         }
 
         Button(
-            onClick = { viewModel.login(emailInput, passwordInput) },
+            onClick = { viewModel.login() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dimensionResource(R.dimen.buttonHeight)),
