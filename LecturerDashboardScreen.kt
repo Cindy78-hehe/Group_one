@@ -1,6 +1,5 @@
 package com.ndejje.nduupdates.view.dashboard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,10 +34,9 @@ fun LecturerDashboardScreen(
     authViewModel: AuthViewModel
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Home", "Notice", "News", "Events")
+    val tabs = listOf("Home", "Posts", "News", "Events")
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
     var showProfileDialog by remember { mutableStateOf(false) }
-    var showCommentsForNotice by remember { mutableStateOf<NoticeEntity?>(null) }
 
     val currentUser by authViewModel.currentUser.collectAsState()
     val notices by noticeViewModel.notices.collectAsState()
@@ -79,11 +76,11 @@ fun LecturerDashboardScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.nduupdate33),
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
                             contentDescription = "NDU Logo",
                             modifier = Modifier.size(40.dp),
-                            contentScale = ContentScale.Crop
+                            tint = Color.Unspecified
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
@@ -138,43 +135,13 @@ fun LecturerDashboardScreen(
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            val type = when (selectedTab) {
-                1 -> "Notice"
-                2 -> "News"
-                3 -> "Event"
-                else -> null
-            }
-
-            if (selectedTab == 0) {
-                LecturerHomeScreen()
-            } else {
-                val userRole = "Lecturer"
-                val filteredNotices = notices.filter { notice ->
-                    val typeMatch = if (type == "Notice") {
-                        notice.type == "Notice" || notice.type == ""
-                    } else {
-                        notice.type == type
-                    }
-                    val targetMatch = notice.targetRole == "All" || notice.targetRole == userRole
-                    typeMatch && targetMatch
-                }
-
-                LecturerPostsScreen(
-                    title = tabs[selectedTab],
-                    notices = filteredNotices,
-                    onViewComments = { showCommentsForNotice = it }
-                )
+            when (selectedTab) {
+                0 -> LecturerHomeScreen()
+                1 -> LecturerPostsScreen(notices)
+                2 -> SimplePlaceholderScreen("University News")
+                3 -> SimplePlaceholderScreen("Upcoming Events")
             }
         }
-    }
-
-    if (showCommentsForNotice != null) {
-        CommentsDialog(
-            notice = showCommentsForNotice!!,
-            noticeViewModel = noticeViewModel,
-            currentUser = currentUser?.username ?: "User",
-            onDismiss = { showCommentsForNotice = null }
-        )
     }
 }
 
@@ -218,27 +185,76 @@ fun LecturerHomeScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LecturerPostsScreen(
-    title: String,
-    notices: List<NoticeEntity>,
-    onViewComments: (NoticeEntity) -> Unit
-) {
+fun LecturerPostsScreen(notices: List<NoticeEntity>) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedFilter by remember { mutableStateOf("All Updates") }
+    val filters = listOf("All Updates", "Lecturer Updates", "Admin Notices", "Department News")
+
+    val filteredUpdates = remember(selectedFilter, notices) {
+        if (selectedFilter == "All Updates") {
+            notices
+        } else {
+            notices.filter { 
+                when(selectedFilter) {
+                    "Admin Notices" -> it.authorRole == "ADMIN"
+                    "Lecturer Updates" -> it.authorRole == "STAFF"
+                    else -> true
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = NDU_Dark_Purple)
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedFilter,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Filter Updates") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = NDU_Dark_Purple,
+                    focusedLabelColor = NDU_Dark_Purple,
+                    cursorColor = NDU_Dark_Purple
+                ),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                filters.forEach { filter ->
+                    DropdownMenuItem(
+                        text = { Text(filter) },
+                        onClick = {
+                            selectedFilter = filter
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (notices.isEmpty()) {
+        if (filteredUpdates.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No $title found.", color = Color.Gray)
+                Text("No updates found.")
             }
         } else {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(notices) { update ->
-                    LecturerPostCard(update, onComment = { onViewComments(update) })
+                items(filteredUpdates) { update ->
+                    LecturerPostCard(update)
                 }
             }
         }
@@ -246,7 +262,7 @@ fun LecturerPostsScreen(
 }
 
 @Composable
-fun LecturerPostCard(notice: NoticeEntity, onComment: () -> Unit) {
+fun LecturerPostCard(notice: NoticeEntity) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -275,7 +291,7 @@ fun LecturerPostCard(notice: NoticeEntity, onComment: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             
             Button(
-                onClick = onComment,
+                onClick = { /* TODO: Open Comments */ },
                 colors = ButtonDefaults.buttonColors(containerColor = NDU_Light_Pink),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
                 modifier = Modifier.align(Alignment.End)
