@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,11 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.ndejje.nduupdates.R
 import com.ndejje.nduupdates.Routes
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
+import com.ndejje.nduupdates.view.components.ProfileDialog
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 import com.ndejje.nduupdates.viewmodel.NoticeViewModel
 
@@ -45,30 +49,17 @@ fun LecturerDashboardScreen(
     val notices by noticeViewModel.notices.collectAsState()
 
     if (showProfileDialog) {
-        AlertDialog(
-            onDismissRequest = { showProfileDialog = false },
-            title = { Text("Lecturer Profile") },
-            text = {
-                Column {
-                    Text("Name: ${currentUser?.username ?: "Lecturer Name"}", fontWeight = FontWeight.Bold)
-                    Text("Role: ${currentUser?.role ?: "Lecturer"}")
-                    Text("Email: ${currentUser?.email ?: "N/A"}")
-                }
+        ProfileDialog(
+            user = currentUser,
+            onDismiss = { showProfileDialog = false },
+            onSave = { name, uri ->
+                authViewModel.updateProfile(name, uri)
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    showProfileDialog = false
-                    authViewModel.logout()
-                    navController.navigate(Routes.WELCOME) {
-                        popUpTo(0)
-                    }
-                }) {
-                    Text("Logout", color = Color.Red)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showProfileDialog = false }) {
-                    Text("Close")
+            onLogout = {
+                showProfileDialog = false
+                authViewModel.logout()
+                navController.navigate(Routes.WELCOME) {
+                    popUpTo(0)
                 }
             }
         )
@@ -96,12 +87,23 @@ fun LecturerDashboardScreen(
                 },
                 actions = {
                     IconButton(onClick = { showProfileDialog = true }) {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = "Profile",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
+                        if (currentUser?.profilePictureUri != null) {
+                            AsyncImage(
+                                model = currentUser?.profilePictureUri,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = "Profile",
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NDU_Dark_Purple)

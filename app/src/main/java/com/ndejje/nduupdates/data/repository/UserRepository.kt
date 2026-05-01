@@ -33,6 +33,15 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
+    suspend fun updateUser(user: UserEntity): Result<Unit> {
+        return try {
+            userDao.updateUser(user)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     private fun hashPassword(password: String): String {
         val bytes = password.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")

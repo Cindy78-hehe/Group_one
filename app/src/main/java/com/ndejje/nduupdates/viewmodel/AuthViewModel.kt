@@ -48,4 +48,19 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     fun resetState() {
         _uiState.value = AuthUiState.Idle
     }
+
+    fun updateProfile(name: String, profilePicUri: String?) {
+        val user = _currentUser.value ?: return
+        viewModelScope.launch {
+            _uiState.value = AuthUiState.Loading
+            val updatedUser = user.copy(username = name, profilePictureUri = profilePicUri)
+            val result = repository.updateUser(updatedUser)
+            result.onSuccess {
+                _currentUser.value = updatedUser
+                _uiState.value = AuthUiState.Success("Profile Updated Successfully")
+            }.onFailure { e ->
+                _uiState.value = AuthUiState.Error(e.message ?: "Update Failed")
+            }
+        }
+    }
 }

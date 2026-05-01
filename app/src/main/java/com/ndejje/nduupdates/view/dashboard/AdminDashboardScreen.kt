@@ -26,6 +26,7 @@ import com.ndejje.nduupdates.data.model.CommentEntity
 import com.ndejje.nduupdates.data.model.NoticeEntity
 import com.ndejje.nduupdates.ui.theme.NDU_Dark_Purple
 import com.ndejje.nduupdates.ui.theme.NDU_Light_Pink
+import com.ndejje.nduupdates.view.components.ProfileDialog
 import com.ndejje.nduupdates.viewmodel.AuthViewModel
 import com.ndejje.nduupdates.viewmodel.NoticeViewModel
 
@@ -41,10 +42,28 @@ fun AdminDashboardScreen(
     val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.List, Icons.Default.Info, Icons.Default.DateRange)
 
     var showAddDialog by remember { mutableStateOf(false) }
+    var showProfileDialog by remember { mutableStateOf(false) }
     val notices by noticeViewModel.notices.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
 
     var showCommentsForNotice by remember { mutableStateOf<NoticeEntity?>(null) }
+
+    if (showProfileDialog) {
+        ProfileDialog(
+            user = currentUser,
+            onDismiss = { showProfileDialog = false },
+            onSave = { name, uri ->
+                authViewModel.updateProfile(name, uri)
+            },
+            onLogout = {
+                showProfileDialog = false
+                authViewModel.logout()
+                navController.navigate(Routes.WELCOME) {
+                    popUpTo(0)
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -62,13 +81,13 @@ fun AdminDashboardScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = {
-                        authViewModel.logout()
-                        navController.navigate(Routes.WELCOME) {
-                            popUpTo(0)
-                        }
-                    }) {
-                        Text("Sign Out", color = Color.White)
+                    IconButton(onClick = { showProfileDialog = true }) {
+                        Icon(
+                            Icons.Default.AccountCircle,
+                            contentDescription = "Profile",
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NDU_Dark_Purple)

@@ -9,5 +9,6 @@ data class UserEntity(
     val email: String,
     val username: String,
     val passwordHash: String,
-    val role: String // "STUDENT", "STAFF", "ADMIN"
+    val role: String, // "STUDENT", "STAFF", "ADMIN"
+    val profilePictureUri: String? = null
 )
