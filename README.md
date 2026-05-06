@@ -1,10 +1,11 @@
 #roleS of the team members
-|team members   | roles|
 
-PENGERE DAVID ISRAEL --LEAD DEVELOPER
-OCHOLA PETER --Testing and Quality Assurance Engineer AND UI/UX Specialist.
-NAKATO CINDY PEACE---Git and Quality Manager.
-KIZITO ARNOLD KIM --Documentation and Research Lead AND UI/UX Specialist.
+|team members   | roles|
+|---------------|-------|
+|PENGERE DAVID ISRAEL |LEAD DEVELOPER|
+|OCHOLA PETER |Testing and Quality Assurance Engineer AND UI/UX Specialist.|
+|NAKATO CINDY PEACE |Git and Quality Manager.|
+|KIZITO ARNOLD KIM |Documentation and Research Lead AND UI/UX Specialist.|
   
   
 PROJECT NDU UPDATE  
@@ -47,27 +48,28 @@ you continue with what you are typing this means that state of the typed words w
 
 
 ## Test Cases & Quality Assurance
-Test ID,Module,Test Scenario,Test Steps,Expected Result,User Role,Status
-TC-01,App Launch,Launch the application,Open the app,Welcome screen displays with Login and Register buttons,All,
-TC-02,Registration,Create new user account,"1. Click Register
-2. Fill Full Name, Email, Password, Confirm Password
-3. Click Create Account",Account created successfully and user can login,New User,
-TC-03,Login,Login with valid credentials,"1. Enter Email and Password
-2. Click Login",User redirected to correct dashboard based on role (Admin / Student / Lecturer),All,
-TC-04,Admin Dashboard,Access Admin Home,Login as Admin,"Admin home screen shows ""Manage university updates, news and events from here""",Admin,
-TC-05,Admin - Create Post,Create new post with audience,"1. Go to Posts → Click +
-2. Enter Title, Type, Audience, Attachment
-3. Post",Post created successfully and visible only to selected audience,Admin,
-TC-06,Role-based Visibility,Student views posts,Login as Student → Navigate to Notice/News/Events,Student sees only posts targeted to Students,Student,
-TC-07,Role-based Visibility,Lecturer views posts,Login as Lecturer → Navigate to Notice/News/Events,Lecturer sees only posts targeted to Lecturers,Lecturer,
-TC-08,Commenting,Add comment on a post,"1. Open any post
+|Test ID|Module|Test Scenario|Test Steps|Expected Result|User Role|Status|
+|-------|------|-------------|----------|---------------|----------|------|
+|TC-01|App Launch|Launch the application|Open the app|Welcome screen displays with Login and Register buttons|All|
+|TC-02|Registration|Create new user account|"1. Click Register
+2. Fill Full Name, Email, Password,Confirm Password
+3. Click Create Account|Account created successfully and user can login|New User|
+|TC-03|Login|Login with valid credentials|1. Enter Email and Password
+2. Click Login|User redirected to correct dashboard based on role (Admin / Student / Lecturer)|All|
+|TC-04|Admin Dashboard|Access Admin Home|Login as Admin|"Admin home screen shows ""Manage university updates| news and events from here"""|Admin|
+|TC-05|Admin - Create Post|Create new post with audience|"1. Go to Posts → Click +
+2. Enter Title, Type,Audience, Attachment
+3. Post"|Post created successfully and visible only to selected audience|Admin|
+|TC-06|Role-based Visibility|Student views posts|Login as Student → Navigate to Notice/News/Events|Student sees only posts targeted to Students|Student|
+|TC-07|Role-based Visibility|Lecturer views posts|Login as Lecturer → Navigate to Notice/News/Events|Lecturer sees only posts targeted to Lecturers|Lecturer|
+|TC-08|Commenting|Add comment on a post|"1. Open any post
 2. Click Comment button
-3. Type comment and send",Comment posted successfully and visible to all users,All,
-TC-09,Profile Management,Update profile picture and name,"1. Click profile icon (top left)
-2. Change photo & name
-3. Save",Profile updated successfully (Email remains unchanged),All,
-TC-10,Logout,Logout from the app,Go to Profile → Click Logout,User successfully logged out and redirected to Welcome screen,All,
-TC-11,Theme Switching,Switch between Light and Dark mode,Toggle theme from settings or profile,App changes between Light (White) and Dark Purple mode,All,
-TC-12,Navigation - Admin,Test Admin bottom navigation,"Login as Admin → Click Posts, Home, News, Events",All navigation buttons work correctly,Admin,
-TC-13,Navigation - User,Test Student/Lecturer navigation,"Login as Student/Lecturer → Click Notice, News, Events",All navigation buttons work correctly,"Student, Lecturer",
-TC-14,Delete Post,Admin deletes a post,Login as Admin → Open post → Delete,Post is deleted and no longer visible to users,Admin,
+3. Type comment and send"|Comment posted successfully and visible to all users|All|
+|TC-09|Profile Management|Update profile picture and name|"1. Click profile icon (top left)
+2. Change photo & name|
+|3. Save"|Profile updated successfully (Email remains unchanged)|All|
+|TC-10|Logout|Logout from the app|Go to Profile → Click Logout|User successfully logged out and redirected to Welcome screen|All|
+|TC-11|Theme Switching|Switch between Light and Dark mode|Toggle theme from settings or profile|App changes between Light (White) and Dark Purple mode|All|
+|TC-12|Navigation - Admin|Test Admin bottom navigation|"Login as Admin → Click Posts, Home, News, Events"|All navigation buttons work correctly|Admin|
+|TC-13|Navigation - User|Test Student/Lecturer navigation|"Login as Student/Lecturer → Click Notice, News, Events"|All navigation buttons work correctly|"Student,Lecturer"|
+|TC-14|Delete Post|Admin deletes a post|Login as Admin → Open post → Delete|Post is deleted and no longer visible to users|Admin|
