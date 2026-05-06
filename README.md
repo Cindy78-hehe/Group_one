@@ -1,14 +1,78 @@
-#roleS of the team members
+## Project identity
+- App name :NduUpdates
+- Youtubelink:https://youtu.be/DSuVSIbDVZw
 
-|team members   | roles|
-|---------------|-------|
-|PENGERE DAVID ISRAEL |LEAD DEVELOPER|
-|OCHOLA PETER |Testing and Quality Assurance Engineer AND UI/UX Specialist.|
-|NAKATO CINDY PEACE |Git and Quality Manager.|
-|KIZITO ARNOLD KIM |Documentation and Research Lead AND UI/UX Specialist.|
+# Team Roster
+|Name  |students ids| roles|
+|---------|------|-------|
+|PENGERE DAVID ISRAEL|24/1/306/D/674 |LEAD DEVELOPER|
+|OCHOLA PETER|24/1/306/D/682 |Testing and Quality Assurance Engineer AND UI/UX Specialist.|
+|NAKATO CINDY PEACE|25/1/314/D/2978 |Git and Quality Manager.|
+|KIZITO ARNOLD KIM|24/1/3I4/D/476 |Documentation and Research Lead AND UI/UX Specialist.|
+
+## Feature Set: NduUpdates
+# 1.Intelligent User Authentication
+- Role-Based Access Control: Automatic identification of users as Admin, Lecturer, or Student based on university email suffixes.
+- Secure Onboarding: Streamlined registration and login process with persistent session management.
+# 2.Multi-Channel Notice System
+- Categorized Updates: Support for distinct communication types including General Notices, Academic News, and Campus Events.
+- Targeted Audience: Ability for staff to broadcast messages to specific groups (e.g., "Students Only" or "Staff Only").
+- Rich Media Support: Integration of image and file attachments to provide comprehensive information.
+# 3.Real-Time Interactive Feed
+- Instant Updates: A dynamic dashboard that prioritizes recent and featured university announcements.
+- Engagement Tools: A commenting system that allows students to seek clarifications directly on notice posts.
+- Content Management: Full CRUD (Create, Read, Update, Delete) capabilities for authorized personnel to manage their posts.
+# 4.Personalized User Experience
+- Profile Customization: Users can manage their identity, update display names, and upload profile pictures via an integrated photo picker.
+- Branded UI/UX: A custom-themed interface using Material 3, featuring professional typography (Playfair Display) tailored for an academic environment.
+# 5.Offline Reliability
+- Local Caching: Powered by a Room Database, ensuring that previously loaded notices are accessible even when students are in low-connectivity areas on campus.
+- Resilient State: UI state persistence that prevents data loss during multitasking or screen transitions.
+
+ ## Techhnical stack 
+# 1. UI & Modern Design
+- Jetpack Compose: The modern toolkit for building native Android UI.
+- Material Design 3 (M3): The latest evolution of Material Design, used for our components, color surfacing, and theming.
+- Material Icons Extended: Provides a comprehensive set of official Material icons (like the Edit and Person icons used in profiles).
+# 2. Image Loading
+- Coil (Compose): An image loading library for Android backed by Kotlin Coroutines.
+- We use this to asynchronously load and cache profile pictures and notice images without lagging the UI.
+# 3. Navigation
+- Jetpack Navigation (Compose): Handles the screen flow between Login, Registration, and the various Dashboards while managing the backstack.
+# 4.Data Persistence (Local Database)
+- Room Database: A persistence library that provides an abstraction layer over SQLite.
+- Room KTX: Adds Kotlin Coroutine support for database queries, allowing for non-blocking database operations.
+- KSP (Kotlin Symbol Processing): Used to generate the necessary code for Room at compile-time for better performance.
+# 5.Architecture & Lifecycle
+- ViewModel (Compose): Used to store and manage UI-related data in a lifecycle-conscious way.
+- Lifecycle Runtime KTX: Provides lifecycle-aware coroutine scopes, ensuring tasks (like fetching notices) are cancelled when the user leaves the screen.
+- StateFlow: Used for reactive data streams from the database to the UI.
+# 6.Utilities & Foundations
+- Core KTX: Provides Kotlin extensions for common Android framework APIs.
+- Activity Compose: Bridges the gap between traditional Android Activities and Jetpack Compose.
+
+
+## Test Cases & Quality Assurance
+|Test ID|Module|Test Scenario|Test Steps|Expected Result|User Role|Results |
+|-------|------|-------------|----------|---------------|----------|------|
+|TC-01|App Launch|Launch the application|Open the app|Welcome screen displays with Login and Register buttons|All|pass|
+|TC-02|Registration|Create new user account|"1. Click Register 2. Fill Full Name, Email, Password,Confirm Password 3. Click Create Account|Account created successfully and user can login|New User|pass|
+|TC-03|Login|Login with valid credentials|1. Enter Email and Password 2. Click Login|User redirected to correct dashboard based on  role (Admin / Student / Lecturer)|All|pass|
+|TC-04|Admin Dashboard|Access Admin Home|Login as Admin|"Admin home screen shows ""Manage university updates| news and events from here"""|Admin|pass|
+|TC-05|Admin - Create Post|Create new post with audience|1. Go to Posts → Click +  2. Enter Title, Type,Audience, Attachment 3.Post |Post created successfully and visible only to selected audience|Admin|pass|
+|TC-06|Role-based Visibility|Student views posts|Login as Student → Navigate to Notice/News/Events|Student sees only posts targeted to Students|Student|pass|
+|TC-07|Role-based Visibility|Lecturer views posts|Login as Lecturer → Navigate to Notice/News/Events|Lecturer sees only posts targeted to Lecturers|Lecturer|pass|
+|TC-08|Commenting|Add comment on a post|1.Open any post 2.Click Comment button 3.Type comment and send|Comment posted successfully and visible to all users|All|pass|
+|TC-09|Profile Management|Update profile picture and name|1.Click profile icon (top left) 2.Change photo & name 3.Save changes"|Profile updated successfully (Email remains unchanged)|All|pass|
+|TC-10|Logout|Logout from the app|Go to Profile → Click Logout|User successfully logged out and redirected to Welcome screen|All|pass|
+|TC-11|Theme Switching|Switch between Light and Dark mode|Toggle theme from settings or profile|App changes between Light (White) and Dark Purple mode|All|pass|
+|TC-12|Navigation - Admin|Test Admin bottom navigation|Login as Admin → Click Posts, Home, News, Events|All navigation buttons work correctly|Admin|pass|
+|TC-13|Navigation - User|Test Student/Lecturer navigation|Login as Student/Lecturer → Click Notice, News, Events|All navigation buttons work correctly|Student,Lecturer|pass|
+|TC-14|Delete Post|Admin deletes a post|Login as Admin → Open post → Delete|Post is deleted and no longer visible to users|Admin|pass|
+
   
   
-PROJECT NDU UPDATE  
+<!--PROJECT NDU UPDATE  
   ##Testing and Quality Assurance Engineer
 ##click on the app icon which takes you to the welcome screen with login amd register buttons
 when you don't have an account ,you click login which takes you to login screen with 
@@ -45,31 +109,5 @@ so this cut across the all users
 ##state was managed well 
 when you are typing and the screen changes orientation.
 you continue with what you are typing this means that state of the typed words was retain
+-->
 
-
-## Test Cases & Quality Assurance
-|Test ID|Module|Test Scenario|Test Steps|Expected Result|User Role|Status|
-|-------|------|-------------|----------|---------------|----------|------|
-|TC-01|App Launch|Launch the application|Open the app|Welcome screen displays with Login and Register buttons|All|
-|TC-02|Registration|Create new user account|"1. Click Register
-2. Fill Full Name, Email, Password,Confirm Password
-3. Click Create Account|Account created successfully and user can login|New User|
-|TC-03|Login|Login with valid credentials|1. Enter Email and Password
-2. Click Login|User redirected to correct dashboard based on role (Admin / Student / Lecturer)|All|
-|TC-04|Admin Dashboard|Access Admin Home|Login as Admin|"Admin home screen shows ""Manage university updates| news and events from here"""|Admin|
-|TC-05|Admin - Create Post|Create new post with audience|"1. Go to Posts → Click +
-2. Enter Title, Type,Audience, Attachment
-3. Post"|Post created successfully and visible only to selected audience|Admin|
-|TC-06|Role-based Visibility|Student views posts|Login as Student → Navigate to Notice/News/Events|Student sees only posts targeted to Students|Student|
-|TC-07|Role-based Visibility|Lecturer views posts|Login as Lecturer → Navigate to Notice/News/Events|Lecturer sees only posts targeted to Lecturers|Lecturer|
-|TC-08|Commenting|Add comment on a post|"1. Open any post
-2. Click Comment button
-3. Type comment and send"|Comment posted successfully and visible to all users|All|
-|TC-09|Profile Management|Update profile picture and name|"1. Click profile icon (top left)
-2. Change photo & name|
-|3. Save"|Profile updated successfully (Email remains unchanged)|All|
-|TC-10|Logout|Logout from the app|Go to Profile → Click Logout|User successfully logged out and redirected to Welcome screen|All|
-|TC-11|Theme Switching|Switch between Light and Dark mode|Toggle theme from settings or profile|App changes between Light (White) and Dark Purple mode|All|
-|TC-12|Navigation - Admin|Test Admin bottom navigation|"Login as Admin → Click Posts, Home, News, Events"|All navigation buttons work correctly|Admin|
-|TC-13|Navigation - User|Test Student/Lecturer navigation|"Login as Student/Lecturer → Click Notice, News, Events"|All navigation buttons work correctly|"Student,Lecturer"|
-|TC-14|Delete Post|Admin deletes a post|Login as Admin → Open post → Delete|Post is deleted and no longer visible to users|Admin|
